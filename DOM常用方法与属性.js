@@ -9,7 +9,9 @@ document.querySelectorAll(selector) | element.querySelectorAll(selector) //返�
 //创建节点
 document.createElement(tagName) //创建元素节点
 document.createTextNode(textValue) //创建文本节点
-element.cloneNode(boolValue)// true: 深复制（但不会复制属性）  false：浅复制
+element.cloneNode(boolValue)// true: 深复制  false：浅复制
+document.adoptNode(node) //remove and import a node from another document.
+document.importNode(node,boolValue) //import a node from another document withpout removing
 
 //获取和修改元素节点属性值
 element.getAttribute(attrName)
@@ -30,6 +32,11 @@ element.style.setProperty('color','red')
 element.style.removeProperty('color')
 
 //常用属性
+document.documentElement //Return the <html> element
+document.doctype //Return the document's doctype
+document.documentMode //Return the mode used by the browser
+document.documentURI //Return the URI of the document 
+element.attributes //Return a NamedNodeMap of an element's attributes
 element.nodeName //返回元素节点的标签名,属性节点的属性名，文本节点是#text
 element.nodeType //返回节点的类型 1：元素节点 2：属性节点 3：文本节点
 element.nodeValue //返回文本节点的文本值，属性节点的属性值，元素节点是undefined或null
@@ -51,3 +58,31 @@ element.childElementCount //返回值和element.children.length相等
 element.textContent //设置或返回指定节点的文本内容，如果节点内有子节点，同时也返回所有字节的文本内容
                     //设置时会删除节点内部的所有内容
 element.innerHTML //设置和返回节点内部的html
+
+
+
+element.classList //Return the class name(s) of an element, as a DOMTokenList object.
+
+const classlists=element.classList;
+
+classlists.length //Return the number of classes in the list. This property is read-only
+
+classlists.add(classname1, classname2, more) //Add one or more class names to an element.
+// If the specified class already exist, the class will not be added
+
+classlists.contains(classname) //Return a Boolean value, 
+//indicating whether an element has the specified class name. 
+
+ classlists.item(index) //Return the class name with a specified index number from an element. 
+ //Index starts at 0. Return null if the index is out of range
+
+classlists.remove(classname1, classname2, more) //Remove one or more class names from an element.
+//NOTE: Removing a class that does not exist, does NOT throw an error
+
+classlists.toggle(classname, boolValue)
+//Toggles between a class name for an element.
+//The first parameter removes the specified class from an element, and returns false.
+//If the class does not exist, it is added to the element, and the return value is true.
+//The optional second parameter is a Boolean value that forces the class to be added or removed, regardless of whether or not it already existed. For example:
+//Remove a class: element.classList.toggle("classToRemove", false);
+//Add a class: element.classList.toggle("classToAdd", true);
