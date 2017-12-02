@@ -37,6 +37,16 @@ document.doctype //Return the document's doctype
 document.documentMode //Return the mode used by the browser
 document.documentURI //Return the URI of the document 
 element.attributes //Return a NamedNodeMap of an element's attributes
+element.className //set or return the class name of an element (the value of an element's class attribute).
+
+element.clientHeight / element.clientWidth //return the viewable height/width of an element in pixels,
+// including padding, but not the border, scrollbar or margin.
+
+element.offsetHeight / element.offsetWidth //returns the viewable height of an element in pixels,
+// including padding, border and scrollbar, but not the margin.
+
+element.scrollLeft //set or return the number of pixels an element's content is scrolled horizontally.
+element.scrollTop //set or return the number of pixels an element's content is scrolled vertically.
 element.nodeName //返回元素节点的标签名,属性节点的属性名，文本节点是#text
 element.nodeType //返回节点的类型 1：元素节点 2：属性节点 3：文本节点
 element.nodeValue //返回文本节点的文本值，属性节点的属性值，元素节点是undefined或null
