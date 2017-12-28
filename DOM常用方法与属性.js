@@ -83,8 +83,8 @@ classlists.add(classname1, classname2, more) //Add one or more class names to an
 classlists.contains(classname) //Return a Boolean value, 
 //indicating whether an element has the specified class name. 
 
- classlists.item(index) //Return the class name with a specified index number from an element. 
- //Index starts at 0. Return null if the index is out of range
+classlists.item(index) //Return the class name with a specified index number from an element.
+//Index starts at 0. Return null if the index is out of range
 
 classlists.remove(classname1, classname2, more) //Remove one or more class names from an element.
 //NOTE: Removing a class that does not exist, does NOT throw an error
