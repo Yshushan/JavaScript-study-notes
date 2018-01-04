@@ -39,18 +39,6 @@ document.documentURI //Return the URI of the document
 element.attributes //Return a NamedNodeMap of an element's attributes
 element.className //set or return the class name of an element (the value of an element's class attribute).
 
-element.clientHeight / element.clientWidth //return the viewable height/width of an element in pixels,
-// including padding, but not the border, scrollbar or margin.
-
-element.offsetHeight / element.offsetWidth //returns the viewable height of an element in pixels,
-// including padding, border and scrollbar, but not the margin.
-
-element.scrollHeight / element.scrollWidth //returns the entire height and width of an element in pixels,
-// including padding, but not the border, scrollbar or margin, that is not viewable (because of overflow).
-
-element.scrollLeft //set or return the number of pixels an element's content is scrolled horizontally.
-element.scrollTop //set or return the number of pixels an element's content is scrolled vertically.
-
 element.nodeName //返回元素节点的标签名,属性节点的属性名，文本节点是#text
 element.nodeType //返回节点的类型 1：元素节点 2：属性节点 3：文本节点
 element.nodeValue //返回文本节点的文本值，属性节点的属性值，元素节点是undefined或null
@@ -69,9 +57,34 @@ element.nextElementSibling //类似element.nextSibling，但只返回元素节�
 element.previousElementSibling //类似element.previousSibling，但只返回元素节点
 element.childElementCount //返回值和element.children.length相等
 
-element.textContent //设置或返回指定节点的文本内容，如果节点内有子节点，同时也返回所有字节的文本内容
-                    //设置时会删除节点内部的所有内容
+element.textContent 
+//设置或返回指定节点的文本内容，如果节点内有子节点，同时也返回所有字节的文本内容
+//设置时会删除节点内部的所有内容
+
 element.innerHTML //设置和返回节点内部的html
+
+element.clientHeight / element.clientWidth
+ //return the viewable height/width of an element in pixels,
+// including padding, but not the border, scrollbar or margin.
+
+element.offsetHeight / element.offsetWidth
+ //returns the viewable height of an element in pixels,
+// including padding, border and scrollbar, but not the margin.
+
+element.scrollHeight / element.scrollWidth
+ //returns the entire height and width of an element in pixels,
+// including padding, but not the border, scrollbar or margin, that is not viewable (because of overflow).
+
+element.scrollLeft / element.scrollTop
+ //set or return the number of pixels an element's content is scrolled horizontally/vertically.
+
+element.offsetLeft / element.offsetTop
+ //returns the left/top position (in pixels) relative to the left/top of the offsetParent element
+ //The offsetParent element is the nearest ancestor that has a position other than static.
+
+window.scrollBy(x,y) //scroll the document by the specified number of pixels. x and y can be negative value
+window.scrollTo(xPos,yPos) // scroll the document to the specified coordinates.
+
 
 
 
@@ -100,9 +113,6 @@ classlists.toggle(classname, boolValue)
 //The optional second parameter is a Boolean value that forces the class to be added or removed, regardless of whether or not it already existed. For example:
 //Remove a class: element.classList.toggle("classToRemove", false);
 //Add a class: element.classList.toggle("classToAdd", true);
-
-window.scrollBy(x,y) //scroll the document by the specified number of pixels. x and y can be negative value
-window.scrollTo(xPos,yPos) // scroll the document to the specified coordinates.
 
 element.addEventListener(eventName,handler,captureMode) 
 // captureMode:true   capturing
