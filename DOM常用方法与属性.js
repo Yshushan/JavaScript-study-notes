@@ -45,8 +45,12 @@ element.clientHeight / element.clientWidth //return the viewable height/width of
 element.offsetHeight / element.offsetWidth //returns the viewable height of an element in pixels,
 // including padding, border and scrollbar, but not the margin.
 
+element.scrollHeight / element.scrollWidth //returns the entire height and width of an element in pixels,
+// including padding, but not the border, scrollbar or margin, that is not viewable (because of overflow).
+
 element.scrollLeft //set or return the number of pixels an element's content is scrolled horizontally.
 element.scrollTop //set or return the number of pixels an element's content is scrolled vertically.
+
 element.nodeName //返回元素节点的标签名,属性节点的属性名，文本节点是#text
 element.nodeType //返回节点的类型 1：元素节点 2：属性节点 3：文本节点
 element.nodeValue //返回文本节点的文本值，属性节点的属性值，元素节点是undefined或null
@@ -96,3 +100,10 @@ classlists.toggle(classname, boolValue)
 //The optional second parameter is a Boolean value that forces the class to be added or removed, regardless of whether or not it already existed. For example:
 //Remove a class: element.classList.toggle("classToRemove", false);
 //Add a class: element.classList.toggle("classToAdd", true);
+
+window.scrollBy(x,y) //scroll the document by the specified number of pixels. x and y can be negative value
+window.scrollTo(xPos,yPos) // scroll the document to the specified coordinates.
+
+element.addEventListener(eventName,handler,captureMode) 
+// captureMode:true   capturing
+// captureMode:false  bubbling
