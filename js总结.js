@@ -308,7 +308,8 @@ function Person(name,age,job){
 		this.job=job;
 		this.sayName=function(){
 			console.log(this.name);
-		}
+    }
+  }
 	else{
 		return new Person(name,age,job);
 	}
