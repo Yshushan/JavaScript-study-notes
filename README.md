@@ -70,7 +70,7 @@ Vue CLI 项目中，对静态资源（static assets）有两种不同的处理�
 #### URL 转换规则
 + 如果 url 是绝对路径（例如：`/images/my-pic.jpg`），它将被原样保留。
 + 如果 url 是相对路径（以 `.` 开头），它将被解释为相对模块请求，并基于你的文件夹结构来解析。
-+ 如果 url 是以 `~` 开头，那么 `~` 后面的部分将被解析为模块请求，这意味着你可以直接引用 `node_modules` 里的资源：
++ 如果 url 以 `~` 开头，`~` 后面的部分将被解析为模块请求，这意味着你可以直接引用 `node_modules` 里的资源：
 
       <img src="~some-npm-package/some-pic.pgn">
 
