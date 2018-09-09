@@ -30,14 +30,14 @@
     vue add vue-router
     vue add vuex
 
-### 预设（preset）
+### 预设（Preset）
 preset 是一个包含一些预先定义好的 options 和 plugins 的 JSON 对象，这些 options 和 plugins 是之前通过 `vue create` 创建新项目时选择的一些特性，它们被保存在用户主目录的 `.vuerc` 文件中。可以直接编辑该文件来更改、添加配置。
 
 使用 `vue create` 创建项目时，通过使用 preset 可以跳过 prompt 过程，重用已有的配置来创建项目。
 
 ### 静态资源处理
 Vue CLI 项目中，对静态资源（static assets）有两种不同的处理方式。
-+ **相对路径导入（relative path imports）**
++ **相对路径导入（Relative path imports）**
 
   如果在 `.js`, `.css`, `.vue` 文件中以相对路径（以 `.` 开头）引用静态资源，这些静态文件会被包含到 `webpack` 的依赖图（dependency graph）中，在 `webpack` 编译时，会将所有的相对 url（如 `<img src="...">`, `background: url(...)`, css `@import`, js `import`）当作模块依赖（module dependencies）来解析。
   
@@ -154,3 +154,28 @@ console.log(process.env.VUE_APP_BAR)
 + `BASE_URL` 代表的是你的项目部署的基路径(base path), 它的值取决于 `vue.config.js` 中的 `baseUrl` 选项。
 
 此外，所有的客户端环境变量在 `public/index.html` 中都可以做为 `interpolation` 使用。更多细节请参考[这里](https://cli.vuejs.org/guide/mode-and-env.html#using-env-variables-in-client-side-code)。
+
+### 构建目标（Build Targets）
+当运行 `vue-cli-service build` 命令时，你可以通过 `--target` 选项指定构建目标，这意味着你可以使用相同的代码库为不同的使用场景生成不同的构建结果。
+#### App
+如果你不特别指定构建目标，App是默认的构建目标，在 App 模式下，
++ `index.html` with asset and resource hints injection
++ 第三方库被分割成单独的 chunk，以实现更好的缓存
++ 小于40kb的静态资源被内联到 JavaScript 中
++ `public` 下的静态资源被复制到输出目录
+
+#### Library
+你可以将某个入口文件构建成库(library)：
+
+    vue-cli-service build --target lib --name mylib [entry]
+    
+入口文件 `entry` 可以是一个 `.js` 或者 `.vue` 文件，如果没有指定 `entry`，默认将 `src/App.vue` 作为 `entry`
+
+一个 library build 的输出目录如下：
+```
+dist/mylib.umd.min.js     # Minified version of the UMD build
+dist/mylib.umd.js         # A UMD bundle for consuming directly in browsers or with AMD loaders
+dist/mylib.common.js      # A CommonJS bundle for consuming via bundlers（不幸的是，webpack 当前对于 build bundle 还不支持 ES module 输出格式
+dist/mylib.css            # 提取的 css 文件 (can be forced into inlined by setting `css: { extract: false }` in `vue.config.js`)
+```
+更多细节移步[这里](https://cli.vuejs.org/guide/build-targets.html#library)
