@@ -37,4 +37,33 @@ preset 是一个包含一些预先定义好的 options 和 plugins 的 JSON 对�
 
 ### 静态资源处理
 Vue CLI 项目中，静态资源（static assets）有两种不同的处理方式
-#### 相对路径导入（relative path import）
++ **相对路径导入（relative path importas）**
+
+  如果在 `.js`, `.css`, `.vue` 文件中以相对路径（以 `.` 开头的路径）引用静态资源，这些静态文件会被包含到 `webpack` 的依赖图（dependency graph）中，在 `webpack` 编译时，会将所有的相对 url（如 `<img src="...">`, `background: url(...)`, css `@import`, js `import`）作为模块依赖（module dependencies）来解析。
+  
+  例如，`url(./image.png)` 将被转换成 `require("./image.png")`，而 `<img src="./image.pgn">` 将被转换成 `h("img",{attrs:{src: require("./image.png")}})`。
+
+  而在内部，`webpack` 使用 `file-loader` 来确定文件最终的正确位置，同时使用 `url-loader`，根据设置好的内联文件大小限制（inline file size limit）来确定是否使用内联资源（inline assets）的方式，来达到减少 HTTP 请求的目的。
+  
++ **public 文件夹**
+
+  放在 public 文件夹内的静态资源，需要用绝对路径引用，而在编译过程中，这一类资源不会经过 `webpack` 处理，仅仅只是被复制到目标位置
+  > 注意：public 文件夹只是做为 “escape hatch” 来使用，也就是说，除非必须要使用它，否则不要使用它！把资源引用作为模块依赖图的一部分，通过 `webpack` 来处理这些资源是更好的选择。
+  
+  如果你用绝对路径引用了 public 文件夹里的资源，那么你必须要考虑你项目将要部署的位置，如果你的项目不是部署在域名的根目录，那么你需要在引用的 url  前添加 `baseUrl` 前缀，例如：
+  
+  在 `public/index.html` 文件或其它将被 `html-webpack-plugin` 处理的模板文件内引用 public 内的静态资源时，你需要这样做：
+  ```html 
+  <link rel="icon" href="<%= BASE_URL %>my-icon.ico">
+  ```
+  在组件中，你需要这样做：
+  ```javascript
+  <img :src="`${baseUrl}my-image.png`">
+  
+  data() {
+      return {
+            baseUrl: process.env.BASE_URL
+      }
+  }
+  ```
+  
