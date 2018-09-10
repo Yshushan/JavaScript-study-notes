@@ -316,15 +316,3 @@ function Person(name,age,job){
 }
 var person1=new Person("Jack",22,teacher);//is ok
 var person2=Person("Mary",22,"singer"); //is ok
-
-
-
-
-
-
-
-
-
-
-
-
