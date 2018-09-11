@@ -1,7 +1,5 @@
 # Node.js
 
----
-
 ## Events
 基本用法：
 ```js
