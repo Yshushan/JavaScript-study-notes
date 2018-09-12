@@ -63,3 +63,40 @@ const User = {
 更多关于路由匹配的用法请参考[高级匹配模式](https://router.vuejs.org/guide/essentials/dynamic-matching.html#advanced-matching-patterns)。
 
 # 嵌套路由（Nested Routes）
+一个路由匹配的组件也可以包含它自己的 `<router-view>`，例如在 `User` 组件中添加这样一个嵌套的出口(outlet):
+```js
+const User = {
+    template: `
+    <div class="nested">
+        <div>{{$route.params.id}}</div>
+        <router-view></router-view>
+    </div>
+    `
+}
+```
+为了将某个组件渲染到这个嵌套的出口（nested outlet），需要在路由配置对象中添加 `children` 选项：
+```js
+const router = new VueRouter({
+    routes: [
+        { 
+            path: '/user/:id',
+            component: User,
+            children: [
+                {
+                    // 当 /user/:id/profile 被匹配时，
+                    // UserProfile 将被渲染到 User 内的 <router-view> 处
+                    path: 'profile',
+                    component: UserProfile
+                },
+                {
+                    // 当 /user/:id/posts 被匹配时，
+                    // UserPosts 将被渲染到 User 内的 <router-view> 处
+                    path: 'posts',
+                    component: UserPosts
+                }
+            ]
+        }
+    ]
+})
+```
+注意，当嵌套路径以 `/` 开头时，将会当作是根路径，这意味着你可以只使用嵌套出口，而不必使用嵌套路径。
