@@ -280,3 +280,151 @@ router.push({ path: '/user', params: { userId }})   //  /user
 > 注意：如果导航目标路由与当前路由仅仅是参数变化，你必须要在路由组件内使用 `beforeRouteUpdate` 去响应路由的变化。
 
 更多关于编程式导航的细节请看[这里](https://router.vuejs.org/guide/essentials/navigation.html)。
+
+# 导航守卫（Navigation Guard）
+顾名思义，导航守卫主要用于在路由导航时进行重定向或者取消当前导航，进而“守卫”导航。有很多钩子可以应用到路由导航的过程中。
+
+## 全局守卫（Global Guards）
+你可以使用 `router.beforeEach` 注册全局导航前守卫(global before guards)：
+```js
+const router = new VueRouter({ ... })
+ router.beforeEach((to, from, next) => {
+     // ...
+ })
+```
+无论什么时候有导航被触发，全局导航前守卫都会按照它们被创建的顺序调用，此时导航处于等待状态，直到所有守卫钩子被解析。
+
+每个守卫函数接收三个参数：
+- `to: Route`: 将要导航到的目标路由对象
+- `from: Route`: 当前将要离开的路由对象
+- `next: Function`：必须要调用这个函数与解析这个钩子，这个函数产生的效果取决于提供给它的参数：
+
+  - `next()` : 执行 pipeline 中的下一个钩子，如果没有排队的钩子，导航被确认。
+  - `next(false)`:终止当前导航。如果浏览器的 url 被改变，它将被设置为 `from` route。
+  - `next('/')` 或 `next({path: '/'})`: 重定向到指定的路由，当前的导航将被中断，新的导航将开始。
+  - `next(error)`: 如果传给 `next` 的是 `Error` 的一个实例，导航将被终止，同时 `error` 将会传给通过 `router.onError()`注册的回调函数。
+
+> 确保总是调用 `next` 函数，否者钩子不会被解析。
+
+对应的有 `afterEach` 全局钩子：
+```js
+router.afterEach((to, from) => {
+  // ...
+})
+```
+不同的是这个钩子函数不接受 `next` 参数，它对导航不产生影响。
+
+## 全局解析守卫 （Global Resolve Guard）
+你也可以通过 `router.beforeResolve` 注册全局守卫，这个钩子在导航被确认之前，且所有的钩子被解析之后调用。看[这里](https://router.vuejs.org/guide/advanced/navigation-guards.html#global-resolve-guards)。
+
+## 路由内守卫 （Pre-Route Guard）
+你可以直接在路由配置对象里定义 `beforeEnter` 守卫:
+```js
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/foo',
+      component: Foo,
+      beforeEnter: (to, from, next) => {
+        // 接受与全局守卫完全相同的参数 
+      }
+    }
+  ]
+})
+```
+> 注意 路由参数或者查询字符串的变化不会触发 `enter/leave` 导航守卫，你可以在组件内监听（`watch`）`$route` 对象，或者用组件内守卫 `beforeRouteUpdate` 去响应它们的变化。
+
+## 组件内守卫 (In-Component Guards)
+你可以直接在路由组件里定义导航守卫：
+
+- `beforeRouteEnter`
+- `beforeRouteUpdate`
+- `beforeRouteLeave`
+
+```js
+const Foo = {
+  template: `...`,
+  beforeRouteEnter (to, from, next) {
+    // called before the route that renders this component is confirmed.
+    // does NOT have access to `this` component instance,
+    // because it has not been created yet when this guard is called!
+  },
+  beforeRouteUpdate (to, from, next) {
+    // called when the route that renders this component has changed,
+    // but this component is reused in the new route.
+    // For example, for a route with dynamic params `/foo/:id`, when we
+    // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
+    // will be reused, and this hook will be called when that happens.
+    // has access to `this` component instance.
+  },
+  beforeRouteLeave (to, from, next) {
+    // called when the route that renders this component is about to
+    // be navigated away from.
+    // has access to `this` component instance.
+  }
+}
+```
+`beforeRouteEnter` 不能访问 `this` 对象，因为此时组件实例还没被创建，但是 `beforeRouteEnter` 的 `next` 可以接受一个 callback 作为参数，这个 callback 将在导航被确认后调用，同时会将组件实例传递给它：
+```js
+beforeRouteEnter (to, from, next) {
+  next(vm => {
+    // access to component instance via `vm`
+  })
+}
+```
+> 注意：`beforeRouteEnter` 是唯一支持传递回调函数给 `next` 的守卫。对于 `beforeRouteUpdate` 和 `beforeRouteLeave` 守卫，`this` 已经是直接可用的，所以没必要再通过回调来访问实例。
+
+更多关于导航守卫的细节看[这里](https://router.vuejs.org/guide/advanced/navigation-guards.html#navigation-guards)。
+
+# 路由元数据 （Route Meta Fields）
+你可以在路由配置对象中包含一个 `meta` 字段:
+```js
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/foo',
+      component: Foo,
+      // a meta field
+      meta: { title: "home" }
+      children: [
+        {
+          path: 'bar',
+          component: Bar,
+          // a meta field
+          meta: { requiresAuth: true }
+        }
+      ]
+    }
+  ]
+})
+```
+在路由配置中的每一个路由对象被称作一条路由记录 (route record), 路由记录可以嵌套，因此当一个路由被匹配时，它可能匹配了多条路由记录。
+
+例如，对于上面的路由配置，`/foo/bar` 将匹配父路由记录和子路由记录，一个路由匹配的所有路由记录都将被暴露到 Vue 实例（包含导航守卫钩子函数接受的 route 对象）的 `$route.matched` 数组中，这样的话，我们就可以通过遍历 `$route.matched` 去检查路由记录中的 `meta` 字段：
+```js
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!auth.loggedIn()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // make sure to always call next()!
+  }
+})
+```
+
+# 获取数据 （Data Fetching）
+有时你可能需要在某个路由被激活时从服务器获取数据，有两种实现方式：
++ 导航后获取（Fetching After Navigation）
+
+    使用这种方式时，会先立刻执行导航和组件渲染，然后在组件的 `created` 钩子中 fetch 数据
++ 导航前获取（Fetching Before Navigation）
+
+    使用这种方式，可以在将要渲染的路由组件里的 `beforeRouteEnter` 钩子中 fetch 数据, 然后在 fetch 结束后，调用 `next` 即可。
