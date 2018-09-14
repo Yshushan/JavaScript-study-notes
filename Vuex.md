@@ -6,7 +6,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const store = Vuex.store({
+const store = new Vuex.Store({
     state: {
         count: 0
     }
@@ -64,7 +64,7 @@ Vuex stores 被设计成响应式的 (reactive)，当 `store`
 ## Getters
 同组件里的 `computed` 属性一样，可以在 Vuex 里定义 `getters`：
 ```js
-const store = new Vuex.Store({
+const store = new new Vuex.Store({
   state: {
     todos: [
       { id: 1, text: '...', done: true },
@@ -134,7 +134,7 @@ export default {
 
 Vuex 中的 mutations 的行为与 js 中的事件 (events) 很相似，mutation 的名字相当于事件类型，mutation 的 handler 相当于为事件注册的处理函数：
 ```js
-const store = Vuex.store({
+const store = new Vuex.Store({
     state: {
         count: 0
     },
@@ -158,7 +158,7 @@ store.commit('increment')
 ```
 `mutation` 以 `state` 做为它的 handler 的第一个参数，但是你也可以给它提供一个额外的参数作为 payload:
 ```js
-const store = Vuex.store({
+const store = new Vuex.Store({
     state: {
         count: 0
     },
@@ -173,7 +173,7 @@ store.commit('incrementBy', 10)
 ```
 大多数情况下，payload 应该是一个对象，这样你就可以提供多个字段信息：
 ```js
-const store = Vuex.store({
+const store = new Vuex.Store({
     state: {
         count: 0
     },
@@ -236,7 +236,7 @@ Actions 与 mutations 有点相似，但是它们有两个重要的区别：
 
 注册 action ：
 ```js
-const store = Vuex.store({
+const store = new Vuex.Store({
     state: {
         count: 0
     },
@@ -254,7 +254,7 @@ const store = Vuex.store({
 ```
 action handler 接受一个 `context` 对象作为参数，这个对象暴露了与 store 实例相同的一些方法和属性，例如：`commit`, `state`, `getters` 等等。利用对象解构语法，action handler 可以这样简化：
 ```js
-const store = Vuex.store({
+const store = new Vuex.Store({
     state: {
         count: 0,
         payload: 10
