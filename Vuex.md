@@ -40,12 +40,12 @@ export default {
         // 使用 'mapState':
         ...mapState([
             'count' // this.count => this.$store.state.count
-        ])
+        ]),
 
         // 或者指定不同的名字：
         ...mapState({
             // 指定别名：this.countAlias => this.$store.state.count
-            countAlias: 'count' 
+            countAlias: 'count', 
 
             //要使用本地状态，必须使用常规函数（接受 state 作为参数），否者无法访问 this
             // this.countPlusLocalState => this.$store.state.count + this.localCount
@@ -79,7 +79,7 @@ const store = new Vuex.Store({
     // 也接受 getters 作为第二参数，这样你可以调用其它 getter
     doneTodosCount (state, getters) {
         return getters.doneTodos.length
-    }
+    },
     //让 getter 返回一个 function，甚至你可以像使用函数一样使用 getter
      doneTodoById (state) { // 像这样：store.getters.doneTodoById(2)
          return id => {
@@ -109,13 +109,14 @@ export default {
         },
         doneTodoById () { // 像使用函数一样，可以给这个计算属性传参：this.doneTodoById(2)
             return this.$store.getters.doneTodoById
-        }
+        },
+
         // 使用 'mapGetters':
         ...mapGetters([
             'doTodos', // this.doTodos => this.$store.getters.doTodos
             'doneTodosCount', // this.doneTodosCount => this.$store.getters.doneTodosCount
             'doneTodoById' // this.doneTodoById(id) => this.$store.getters.doneTodoById(id)
-        ]) 
+        ]), 
 
         // 使用别名：
         ...mapGetters({
@@ -214,12 +215,12 @@ export default {
             '', // this.doTodos => this.$store.getters.doTodos
             'increment', // this.increment() => this.$store.commit('increment')
             'incrementBy' // this.incrementBy(payload) => this.$store.commit('incrementBy', payload)
-        ]) 
+        ]), 
 
         // 使用别名：
         ...mapMutations({
             add: 'increment', // this.add() => this.$store.commit('increment')
-            addBy: 'incrementBy', // this.addBy(payload) => this.$store.commit('increment', payload)
+            addBy: 'incrementBy' // this.addBy(payload) => this.$store.commit('increment', payload)
         })
     }
 }
@@ -255,7 +256,7 @@ action handler 接受一个 `context` 对象作为参数，这个对象暴露了
 ```js
 const store = Vuex.store({
     state: {
-        count: 0
+        count: 0,
         payload: 10
     },
 
@@ -298,8 +299,8 @@ export default {
         incrementAction () {
             this.$store.dispatch('incrementAction')
         },
-        incrementByAction (payload) {
-            this.$store.dispatch('incrementByAction', payload)
+        incrementByActionAsync (payload) {
+            this.$store.dispatch('incrementByActionAsync', payload)
         },
 
         // 使用 'mapActions':
@@ -307,12 +308,12 @@ export default {
             '', // this.doTodos => this.$store.getters.doTodos
             'incrementAction', // this.incrementAction() => this.$store.dispatch('incrementAction')
             'incrementByActionAsync' // this.incrementByActionAsync(payload) => this.$store.dispatch('incrementByActionAsync', payload)
-        ]) 
+        ]),
 
         // 使用别名：
         ...mapActions({
             addAction: 'incrementAction', // this.addAction() => this.$store.dispatch('incrementAction')
-            addByActionAsync: 'incrementByActionAsync', // this.addByActionAsync(payload) => this.$store.dispatch('incrementByActionAsync', payload)
+            addByActionAsync: 'incrementByActionAsync' // this.addByActionAsync(payload) => this.$store.dispatch('incrementByActionAsync', payload)
         })
     }
 }
