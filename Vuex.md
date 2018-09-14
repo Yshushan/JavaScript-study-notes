@@ -305,7 +305,6 @@ export default {
 
         // 使用 'mapActions':
         ...mapActions([
-            '', // this.doTodos => this.$store.getters.doTodos
             'incrementAction', // this.incrementAction() => this.$store.dispatch('incrementAction')
             'incrementByActionAsync' // this.incrementByActionAsync(payload) => this.$store.dispatch('incrementByActionAsync', payload)
         ]),
