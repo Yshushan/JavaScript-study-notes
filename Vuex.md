@@ -288,7 +288,7 @@ store.dispatch('incrementByActionAsync', 10)
 ```
 同触发 mutation 类似，你不能直接调用 action 的 handler，而是通过调用 `store` 的 `dispatch` 方法来触发。
 
-## 在组件中 Dispatch Action
+### 在组件中 Dispatch Action
 ```js
 import {mapActions} from 'vuex'
 
@@ -318,7 +318,7 @@ export default {
 ```
 > 上面的代码只是作为示例，实际使用时根据实际需要选择一种方法即可。
 
-## 组合 Actions
+### 组合 Actions
 Actions 一般都用于异步操作，`store.dispatch` 可以处理 action handler 返回的 Promise，同时它也返回一个 Promise：
 ```js
 actions: {
@@ -491,7 +491,7 @@ const store = new Vuex.Store({
         // 模块内 action 在模块外部必须通过名称空间来 dispatch:
         // store.dispatch('account/login')
         // globalAction({dispatch}) { dispatch('account/login') }
-        login () { ... }
+        login () { ... },
 
         otherAction ({commit, dispatch, state, getters, rootState, rootGetters}) {
           // commit 是局部的，默认 commit 模块内部的 mutation
