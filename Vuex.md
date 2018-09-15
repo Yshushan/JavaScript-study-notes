@@ -542,3 +542,101 @@ const store = new Vuex.Store({
   }
 })
 ```
+### 在组件中导入 Namespaced Module
+```js
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
+
+export default {
+  // ...
+  computed: {
+    // 导入 Module State
+    // 使用 $store
+    foo () {
+      return this.$store.state.some.nested.module.foo
+    },
+    // 使用 mapState
+    // 指定别名
+    ...mapState({
+      // module state 不支持 fooAlias: 'some/nested/module/foo' 这样的形式，必须像下面这样指定别名
+      fooAlias: state => state.some.nested.module.foo
+    }),
+    // 更好的方式是传递 namespace 字符串给 mapState 作为第一个参数
+    ...mapState('some/nested/module', [
+      'foo', // this.a => this.$store.state.some.nested.module.foo
+      'bar' // this.b => this.$store.state.some.nested.module.bar
+    ]),
+    ...mapState('some/nested/module', {
+      fooAlias: 'foo' // this.aAlias => this.$store.state.some.nested.module.foo
+    })
+
+    // 导入 Module Getters
+    // 使用 $store
+    moduleGetter () {
+      return this.$store.getters['some/nested/module/moduleGetter']
+    },
+    // 使用 mapGetters
+    ...mapGetters([
+      'some/nested/module/moduleGetter', // this['some/nested/module/moduleGetter'] => this.$store.getters['some/nested/module/moduleGetter']
+      'someRootGetter'
+    ]),
+    // 指定别名
+    ...mapGetters({
+      getterAlias: 'some/nested/module/moduleGetter' // this.getterAlias => this.$store.getters['some/nested/module/moduleGetter']
+    }),
+    // 更好的方式是传递 namespace 字符串给 mapGetters 作为第一个参数
+    ...mapGetters('some/nested/module', [
+      'moduleGetter'
+    ]),
+    ...mapGetters('some/nested/module', {
+      getterAlias: 'moduleGetter'
+    })
+  },
+
+  methods: {
+    // 导入 Module Mutations
+    // 是同 $store
+    moduleMutation () {
+      this.$store.commit('some/nested/module/moduleMutation')
+    },
+    // 使用 mapMutations
+    ...mapMutations([
+      'some/nested/module/moduleMutation', // this['some/nested/module/moduleMutation']() => this.$store.commit('some/nested/module/moduleMutation')
+      'someRootMutation'
+    ]),
+    // 指定别名
+    ...mapMutations({
+      mutationAlias: 'some/nested/module/moduleMutation' // this.mutationAlias() => this.$store.commit('some/nested/module/moduleMutation')
+    }),
+    // 更好的方式是传递 namespace 字符串给 mapMutations 作为第一个参数
+    ...mapMutations('some/nested/module', [
+      'moduleMutation' //this.moduleMutation() => this.$store.commit('some/nested/module/moduleMutation')
+    ]),
+    ...mapMutations('some/nested/module', {
+      mutationAlias: 'moduleMutation'
+    })
+
+    // 导入 Module Actions
+    // 使用 $store
+    moduleAction () {
+      this.$store.dispatch('some/nested/module/moduleAction')
+    },
+    // 使用 mapActions
+    ...mapActions([
+      'some/nested/module/moduleAction', // this['some/nested/module/moduleAction']() => this.$store.dispatch('some/nested/module/moduleAction')
+      'someRootAction'
+    ]),
+    // 指定别名
+    ...mapAction({
+      actionAlias: 'some/nested/module/moduleAction' // this.actionAlias() => this.$store.dispatch('some/nested/module/moduleAction')
+    }),
+    // 更好的方式是传递 namespace 字符串给 mapActions 作为第一个参数
+    ...mapAction('some/nested/module', [
+      'moduleAction' // this.moduleAction() => this.$store.dispatch('some/nested/module/moduleAction')
+    ]),
+    ...mapActions('some/nested/module', {
+      actionAlias: 'moduleAction'
+    })
+  }
+}
+```
+更多用法请看[这里](https://vuex.vuejs.org/guide/modules.html#binding-helpers-with-namespace)。
