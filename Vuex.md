@@ -195,7 +195,7 @@ store.commit({
     amount: 10
 })
 ```
-### 在组件中 commit mutation
+### 在组件中 Commit Mutation
 
 ```js
 import {mapMutations} from 'vuex'
@@ -212,7 +212,6 @@ export default {
 
         // 使用 'mapMutations':
         ...mapMutations([
-            '', // this.doTodos => this.$store.getters.doTodos
             'increment', // this.increment() => this.$store.commit('increment')
             'incrementBy' // this.incrementBy(payload) => this.$store.commit('incrementBy', payload)
         ]), 
@@ -319,3 +318,227 @@ export default {
 ```
 > 上面的代码只是作为示例，实际使用时根据实际需要选择一种方法即可。
 
+## 组合 Actions
+Actions 一般都用于异步操作，`store.dispatch` 可以处理 action handler 返回的 Promise，同时它也返回一个 Promise：
+```js
+actions: {
+  actionA ({commit}) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        commit('someMutation')
+        resolve()
+      }, 1000)
+    })
+  }
+}
+```
+然后你可以：
+```js
+store.dispatch('actionA').then(() => {
+  // ...
+})
+```
+或者在另一个 action 中：
+```js
+actions：{
+  // ...
+  actionB ({dispatch, commit}) {
+    return dispatch('actionA').then(() => {
+      commit('someOtherMutation')
+    })
+  }
+}
+```
+你也可以用 `async/await` 语法，来组合actions：
+```js
+// 假设 getData() 和 geOtherData() 返回 Promise
+
+actions: {
+  async actionA ({commit}) {
+    commit('gotData', await getData())
+  },
+  async actionB ({dispatch, commit}) {
+    await dispatch('actionA') // 等待 actionA 完成
+    commit('gotOtherData', await gotOtherData())
+  }
+}
+```
+更多请看[这里](https://vuex.vuejs.org/guide/actions.html)。
+
+## 模块化
+
+由于使用单一状态树 (single state tree)，应用里的所有共享状态都被包含在同一个对象中。随着我们应用规模变的越来越大，这个store 也会膨胀的很大，这可能不是好事，也难以维护。
+
+Vuex 允许你将 store 分割生小的模块，每个模块包含自己 `state`, `getters`, `mutations`, `actions`:
+```js
+const moduleA = {
+  state: { ... },
+  getters: { ... },
+  mutations: { ... },
+  actions: { ... }
+}
+
+const moduleB = {
+  state: { ... },
+  getters: { ... },
+  mutations: { ... },
+  actions: { ... }
+}
+
+const store = new Vuex.Store({
+  modules: {
+    moduleA,
+    moduleB
+  }
+})
+
+store.state.moduleA // 访问 moduleA 的 state
+store.state.moduleB // 访问 moduleB 的 state
+```
+### 模块的局部状态
+模块内部的 `getters` 和 `mutations` 接收的第一个参数是模块局部 `state`, 模块内部的 `actions` 通过 `context.state` 暴露的也是局部 `state`：
+```js
+const moduleA = {
+  state: { 
+    count: 0
+  },
+  getters: {
+    doubleCount (state) {
+      // state 是 local state
+      return state.count * 2
+    },
+  },
+  mutations: {
+    increment (state) {
+      // state 是 local state
+      state.count++
+    }
+  },
+  actions: {
+    incrementOnlyOdd ({ state, commit}) {
+      // state 是 local state
+      if(state.count % 2){
+        commit('increment')
+      }
+    }
+  }
+}
+```
+如果要访问根 `state`，`getters` 接受根 `state` 作为第三个参数, 而 `actions` 通过 `context.rootState` 暴露根 `state`：
+```js
+const moduleA = {
+  // ...
+  getters: {
+    // 注意，这里的第二个参数 getters 是全局的
+    // 同过它能访问到模块内和根部的所有 getter，指定了 namespace 的模块除外
+    sumWithRootCount(state, getters, rootState){
+      return state.count + rootState.count
+    }
+  },
+  actions: {
+    incrementIfOddOnRootSum ({ state, commit, rootState }) {
+      if ((state.count + rootState.count) % 2 === 1) {
+        commit('increment')
+      }
+    }
+  }
+}
+```
+> **注意**
+> + 不管模块指不指定 namespace，模块内的 `state` 都是局部的，且不会与同名的根 `state` 产生冲突。
+> + 如果没有指定 namespace，模块内部的 `getters`, `mutations`, `actions` 都是注册到全局名称空间 (global namespace) 的，访问它们与访问根部的选项没有任何区别：
+>   ```js
+>    // 访问模块内 getters
+>   store.getters.getterInModule
+>   globalGetter(state, getters) { getters.getterInModule }
+>
+>   // commit 模块内 mutations
+>   store.commit('mutationInModule')
+>   globalAction({commit}) { commit('mutationInModule') }
+>   
+>   // dispatch 模块内 actions
+>   store.dispatch('actionInModule')
+>   globalAction({dispatch}) { dispatch('mutationInModule') }
+>   ```
+> + 如果没有指定 namespace，模块内的 getter 会与根部同名的 getter 产生冲突。但是 mutation 和 action 不会，同名的 mutaion 和 action 就好比给同一个事件注册了多个处理函数，当某个 mutation 或 action 被触发时，对应的所有 handler 会依次被调用。
+
+
+### 指定名称空间 (Namespacing)
+如果你想要模块更独立且能被重用，你可以为模块指定名称空间：`namespaced: true`。这样当模块被注册时，它内部的 `getters`, `actions`, `mutations` 将基于模块被注册的路径，被自动添加到名称空间中：
+```js
+const store = new Vuex.Store({
+  modules: {
+    account: {
+      namespaced: true,
+
+      // module assets
+      state: { ... }, // 模块内 state 始终是局部的，不受 namespace 选项影响
+      getters: {
+        // 模块内 getter 不再与全局同名的 getter 冲突，且在模块外部必须通过名称空间来访问：
+        // store.getters['account/isAdmin']
+        // globalGetter(state, getters) { getters['account/isAdmin'] }
+        isAdmin () { ... },
+
+        // 第二参数 getters 将是局部的，通过它可以访问局部 getter 不需添加名称空间前缀
+        // 第四个参数 rootGetters 是全局的，可以访问全局空间内的 getter
+        otherGetter (state, getters, rootState, rootGetters) {
+          getters.isAdmin // => account/isAdmin
+          rootGetters.isAdmin // => isAdmin
+        }
+        
+      },
+      actions: {
+        // 模块内 action 在模块外部必须通过名称空间来 dispatch:
+        // store.dispatch('account/login')
+        // globalAction({dispatch}) { dispatch('account/login') }
+        login () { ... }
+
+        otherAction ({commit, dispatch, state, getters, rootState, rootGetters}) {
+          // commit 是局部的，默认 commit 模块内部的 mutation
+          commit('innerMutation')
+          // 要 commit 全局的 mutation，使用 {root: true} 作为第三个参数
+          commit('globalMutation', payload, {root: true})
+
+          // dispatch 是局部的，默认 dispatch 模块内部的 action
+          dispatch('innerAction')
+          // 要 dispatch 全局的 action，使用 {root: true} 作为第三个参数
+          dispatch('globalAction', payload, {root: true})
+
+          // getters 是局部的，通过它可以访问局部 getter 不需添加名称空间前缀
+          getters.isAdmin // => account/isAdmin
+
+          // rootGetters 是全局的，可以访问全局空间内的 getter
+          rootGetters.isAdmin // => isAdmin
+        }
+      },
+      mutations: {
+        // 模块内 mutation 在模块外部必须通过名称空间来 commit
+        // store.commit('account/login')
+        // globalAction({commit}) { commit('account/login') }
+        login () { ... } 
+      },
+
+      // nested modules
+      modules: {
+        // inherits the namespace from parent module
+        myPage: {
+          state: { ... },
+          getters: {
+            profile () { ... } // -> getters['account/profile']
+          }
+        },
+
+        // further nest the namespace
+        posts: {
+          namespaced: true,
+
+          state: { ... },
+          getters: {
+            popular () { ... } // -> getters['account/posts/popular']
+          }
+        }
+      }
+    }
+  }
+})
+```
