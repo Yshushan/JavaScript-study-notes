@@ -594,7 +594,7 @@ export default {
 
   methods: {
     // 导入 Module Mutations
-    // 是同 $store
+    // 使用 $store
     moduleMutation () {
       this.$store.commit('some/nested/module/moduleMutation')
     },
@@ -640,3 +640,92 @@ export default {
 }
 ```
 更多用法请看[这里](https://vuex.vuejs.org/guide/modules.html#binding-helpers-with-namespace)。
+
+## Plugins
+Vuex stores 可以接受一个 `plugins` 选项来为每一次 mutation 定制钩子，Vuex plugin 是一个接受 `store` 作为唯一参数的函数。关于 plugins 的用法请看[这里](https://vuex.vuejs.org/guide/plugins.html#plugins)。
+
+## 严格模式 (Strict Mode)
+开启严格模式：
+```js
+const store = new Vuex.Store({
+  // ...
+  strict: true
+})
+
+```
+在严格模式下， 所有的 state 变更必须通过 commit mutation 在 mutation handler 里面进行，否者将会抛出错误。
+
+但是不要在生产环境下开启严格模式：
+```js
+const store = new Vuex.Store({
+  // ...
+  strict: process.env.NODE_ENV !== 'production'
+})
+```
+## 表单处理
+如果 `v-model` 指令绑定的数据是属于 Vuex store 的 state，当 Vuex 处于严格模式下时，这会有点问题:
+```js
+<input v-model="message">
+```
+如果 `message` 是从 Vuex store 中导入的 state生成的计算属性，因为 `v-model` 双向绑定的特性，当用户在输入框中输入内容时，`v-model` 将试图直接去修改 `message` 的值，这将导致一个错误，因为在严格模式下，store state 的修改必须在 mutation handler 里进行。
+
+要解决这个问题，一个方法是将 `v-model` 中更新数据的部分分离出来，来定制它的行为：
+```js
+// component.vue
+
+<template>
+  <input :value="message" @input="updateMessage>
+</template>
+
+<script>
+export default {
+  // ...
+  computed: {
+    message () {
+      return this.$store.state.message
+    }
+  },
+  methods: {
+    updataMessage (e) {
+      this.$store.commit('updateMessage', e.target.value)
+    }
+  }
+}
+</script>
+```
+最好的方法是使用计算属性的双向绑定：
+```js
+<template>
+  <input v-model="message">
+</template>
+
+<script>
+export default { 
+  // ...
+  computed: {
+    message: {
+      get () {
+        return this.$store.state.message
+      },
+      set (value) {
+        this.$store.commit('updateMessage', value)
+      }
+    }
+  }
+}
+</script>
+``` 
+```js
+// store.js
+
+// ...
+state: {
+  message: ''
+}
+mutations: {
+  updateMessage (state, message) {
+    state.message = message
+  }
+}
+```
+更多关于 Vuex 看[这里](https://vuex.vuejs.org/)。
