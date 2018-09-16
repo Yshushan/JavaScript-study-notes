@@ -153,7 +153,7 @@ store.mutations.increment()
 ```
 而是通过 `store` 的 `commit` 方法来提交 matation 的名字：
 ```js
-// 这更像是”事件触发“
+// 这更像是“事件触发”
 store.commit('increment')
 ```
 `mutation` 以 `state` 做为它的 handler 的第一个参数，但是你也可以给它提供一个额外的参数作为 payload:
@@ -670,7 +670,6 @@ const store = new Vuex.Store({
 如果 `message` 是从 Vuex store 中导入的 state生成的计算属性，因为 `v-model` 双向绑定的特性，当用户在输入框中输入内容时，`v-model` 将试图直接去修改 `message` 的值，这将导致一个错误，因为在严格模式下，store state 的修改必须在 mutation handler 里进行。
 
 要解决这个问题，一个方法是将 `v-model` 中更新数据的部分分离出来，来定制它的行为：
-<<<<<<< HEAD
 ```html
 // component.vue
 
@@ -695,7 +694,7 @@ export default {
 </script>
 ```
 最好的方法是使用计算属性的双向绑定：
-```js
+```html
 <template>
   <input v-model="message">
 </template>
