@@ -670,6 +670,7 @@ const store = new Vuex.Store({
 如果 `message` 是从 Vuex store 中导入的 state生成的计算属性，因为 `v-model` 双向绑定的特性，当用户在输入框中输入内容时，`v-model` 将试图直接去修改 `message` 的值，这将导致一个错误，因为在严格模式下，store state 的修改必须在 mutation handler 里进行。
 
 要解决这个问题，一个方法是将 `v-model` 中更新数据的部分分离出来，来定制它的行为：
+<<<<<<< HEAD
 ```html
 // component.vue
 
