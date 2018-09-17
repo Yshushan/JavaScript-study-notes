@@ -187,3 +187,108 @@ filters 可以接受额外的参数：
 {{ message | filterA('arg1', arg2) }}
 ```
 这里，`filterA` 被定义成接受三个参数的函数，第一个参数始终是它前面的表达式的值，字符串字面量 `'arg1'` 将被当作第二个参数，表达式 `arg2` 的值，被当作第三个参数。
+
+## Vue 实例属性 
+### vm.$data
+Vue 实例监视的 data 对象，Vue 实例也代理了 data 的属性的访问权(以 `'_'` 和 `'$'` 开头的属性除外)：
+```js
+export default {
+  //...
+  data () {
+    return {
+      foo: 333
+    }
+  },
+  created () {
+    // 通过 Vue 实例代理访问 data 对象上的属性
+    console.log(this.foo) // => 333
+    // 通过实例属性 $data 访问
+    console.log(this.$data.foo) // => 333
+  }
+}
+```
+> 注意：Vue 实例不代理访问以 `'_'` 和 `'$'` 开头的属性，对于这样的属性，你只能使用 `$data` 来访问。
+
+### vm.$props
+一个包含组件当前接收的props的对象，Vue 实例也代理了它 props 选项的属性的访问权：
+```js
+//Parent.vue
+<Child propA="hello"/>
+
+// Child.vue
+export default {
+  // ...
+  name: 'child',
+  props：['propA'],
+  created () {
+    // 通过 Vue 实例代理访问 props 上的属性
+    console.log(this.propA) // => 'hello'
+    // 通过实例属性 $props 访问
+    console.log(this.$props.propA) // => 'hello'
+  }
+}
+```
+
+### vm.$el
+Vue 实例挂载的根 DOM 元素
+
+### vm.$options
+用于访问自定义选项数据：
+```js
+new Vue({
+  customOption: 'foo',
+  created: function () {
+    console.log(this.$options.customOption) // => 'foo'
+  }
+})
+```
+
+### vm.$parent
+如果当前实例有父实例，则代表父实例对象，可以访问父实例的数据
+
+### vm.$root
+当前组件树的根 Vue 实例，如果当前实例没有父实例，则这个值就是它本身。
+
+### vm.$children
+当前实例的直接子组件实例的数组，注意，这个数组不保证子实例的顺序，而且也不是响应式的。详情看[这里](https://vuejs.org/v2/api/#vm-children)。
+
+### vm.$slots
+用于编程式的访问通过插槽 (slot) 分发的内容，通常在写渲染函数 (render function) 时使用，对于具名插槽 (named slot) 分发的内容将被映射到这个对象的同名字段，例如，分发内容带有 `slot="foo"` 属性，那么它将被映射到 `vm.$slots.foo`，而 `vm.$slots.default` 包含所有未命名插槽分发的内容。详情看[这里](https://vuejs.org/v2/api/#vm-slots)。
+
+### vm.$scopedSlots
+用于编程式的访问通过作用域插槽 (scoped slot) 分发的内容。详情看[这里](https://vuejs.org/v2/api/#vm-scopedSlots)。
+
+### vm.$refs
+一个包含通过 `ref` 属性注册过的 DOM 元素 和 组件实例的对象，例如，如果在一个原生 HTML 元素上注册了 `ref='foo'` 属性，那么 `vm.$refs.foo` 就代表了这个 DOM 元素，可以直接对它进行 DOM 操作。如果在一个组件上注册了 `ref='bar'` 属性，那么`vm.$refs.bar` 就代表了这个组件实例，可以直接操作它的数据。详情看[这里](https://vuejs.org/v2/api/#vm-refs)。
+
+### vm.$isServer
+boolean 值，表示当前 Vue 实例是否运行在服务器端。
+
+### vm.$attrs
+包含父作用域内的绑定的 non-prop 属性的键值对 (`class` 和 `style` 属性除外)。也就是说，如果组件自身没有声明任何 props，那么这个对象包含父作用域内绑定的所有属性的键值对 (`class` 和 `style` 属性除外)，可以使用 `v-bind="$attrs"` 将其传递到组件内部的任何元素上。详情请看[这里](https://forum.vuejs.org/t/attrs/42178)。
+
+### vm.$listeners
+包含父作用域内 `v-on` 绑定的事件监听器(没有 `.native` 修饰符)，当你想要在父作用域内监听组件内部某个元素触发的原生事件 (非 `this.$emit` 触发的事件) 时，可以将 `$listeners` 绑定到那个元素上：`v-on="$listeners"`。详情请看[这里](https://vuejs.org/v2/guide/components-custom-events.html#Binding-Native-Events-to-Components)。
+
+## Vue 实例方法
+### vm.$watch
+
+### vm.$set
+
+### vm.$delete
+
+### vm.$on
+
+### vm.$once
+
+### vm.$off
+
+### vm.$emit
+
+### vm.$mount
+
+### vm.$forceUpdate
+
+### vm.$nextTick
+
+### vm.$destory
