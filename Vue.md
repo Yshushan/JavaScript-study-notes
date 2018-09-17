@@ -271,24 +271,85 @@ boolean 值，表示当前 Vue 实例是否运行在服务器端。
 包含父作用域内 `v-on` 绑定的事件监听器(没有 `.native` 修饰符)，当你想要在父作用域内监听组件内部某个元素触发的原生事件 (非 `this.$emit` 触发的事件) 时，可以将 `$listeners` 绑定到那个元素上：`v-on="$listeners"`。详情请看[这里](https://vuejs.org/v2/guide/components-custom-events.html#Binding-Native-Events-to-Components)。
 
 ## Vue 实例方法
-### vm.$watch
+### vm.$watch(expOrFn, callback, [options])
+在 Vue 实例中监听一个表达式或一个 computed function 的变化，callback 接受 new value 和 old value 作为参数，且当监听的依赖发生变化时被调用。当监听的是表达式时，只接受以 `.` 为分隔路径的表达式。对于更复杂的表达式，请使用 computed function 代替：
+```js
+export default {
+  data () {
+    return {
+      a: {
+        b: {
+          c: 'abc'
+        }
+      },
+      d: 1,
+      e: 2
+    },
+    created () {
+      // 监听表达式
+      this.$watch(this.a.b.c, function (newVal, oldVal) {
+        // 当 this.a.b.c 的值改变时，被调用
+      })
 
-### vm.$set
+      // 监听 computed function
+      this.$watch(function () {
+        return this.d + this.e
+      }, function (newVal, oldVal) {
+        // 当 this.d + this.e 的值发生变化是，被调用
+      })
+    }
+  }
+}
+```
+`vm.$watch` 返回一个 unwatch function，用来解绑 callback：
+```js
+let unwatch = vm.$watch('a', callback)
+unwatch() // 之后，a 变化也不会触发 callback
+```
+更改一个对象内部的值，不会触发它的监听函数，因为 newVal 和 oldVal 引用同一个对象，如果要监听一个对象内部的变化，给 `$watch` 传递 `{deep: true}` 作为第三个参数：
+```js
+vm.$watch('someObject', callback, {
+  deep: true
+})
 
-### vm.$delete
+vm.someObject.nestedValue = 123
+// callback 被调用
+```
+更多用法请看[这里](https://vuejs.org/v2/api/#vm-watch)。
+### vm.$set(target, key, value)
+This is the alias of the global [`Vue.set`](https://vuejs.org/v2/api/#Vue-set).
+### vm.$delete(target, key)
+This is the alias of the global [Vue.delete](https://vuejs.org/v2/api/#Vue-delete).
+### vm.$on(event, callback)
+在当前 Vue 实例中监听自定义事件(由 `vm.$emit` 触发的事件)
+```js
+vm.$on(`test`, function (msg) {
+  console.log(msg)
+})
+vm.$emit('test', 'hi')
+// => 'hi'
+```
+### vm.$once(event, callback)
+监听自定义事件，但是 callback 只在事件第一次触发时被调用一次，之后被移除。
 
-### vm.$on
+### vm.$off([event, callback])
+移除自定义事件的 callback。两个参数都可选，详情请看[这里](https://vuejs.org/v2/api/#vm-off)。
 
-### vm.$once
+### vm.$emit(eventName, [...args])
+在当前 Vue 实例中触发 eventName 事件，并将 args 传递给该事件的 callback function。详情请看[这里](https://vuejs.org/v2/api/#vm-emit)。
+### vm.$mount([elementOrSelector])
+如果 Vue 实例在实例化时不存在 `el` 选项，它将处于未挂载状态，即没有与之关联的 DOM 元素。如果你没有提供 `el`选项，你可以：
+```js
+const myComponent = Vue.extend({
+  template: '<div>hello</div>'
+})
 
-### vm.$off
-
-### vm.$emit
-
-### vm.$mount
-
-### vm.$forceUpdate
-
-### vm.$nextTick
-
-### vm.$destory
+// create and mount to #app (will replace #app)
+new myComponent().$mount('#app')
+```
+### vm.$forceUpdate()
+Force the Vue instance to re-render. Note it does not affect all child components, only the instance itself and child components with inserted slot content.
+### vm.$nextTick([callback])
+callback将在下一次 DOM 更新周期之后执行。当你更改了某些数据后可以立即调用这个方法，然后等待DOM更新。这个方法与全局方法 `vue.nextTick` 类似，但是这个方法的 callback 的 `this` 会自动绑定到当前Vue 实例对象。
+### vm.$destory()
+详情看[这里](https://vuejs.org/v2/api/#vm-destroy)。
