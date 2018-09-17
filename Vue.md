@@ -359,10 +359,10 @@ callback将在下一次 DOM 更新周期之后执行。当你更改了某些数�
 当该指令用于原生 html 元素时，监听的是原生DOM事件，当该指令用于组件时，监听的是组件自定义事件(`$emit` 触发):
 ```html
 <!-- 这里监听的是原生 click 事件 -->
-<button @click="handler1">click</botton>
+<button @click="handler1">click</button>
 
 <!-- 这里监听的是组件自定义的 click 事件 -->
-<myButton @click="handler2"/>
+<myButton @click="handler2"></myButton>
 ```
 如果要在组件上监听原生 DOM 事件，可以使用 `.native` 修饰符：
 ```html
@@ -395,13 +395,6 @@ export default {
 ```
 如果绑定的表达式是一个内联语句，这个语句可以访问特殊的 `$event` 属性, 它代表原生事件对象：
 ```html
-<!-- 这里监听的是组件根元素上的原生 click 事件 -->
-<myButton @click.native="handler2"/>
-```
-> 注意：使用 `.native` 修饰符始终是监听组件根元素上的原生事件。要监听根元素内部的原生事件请使用 `$listeners`。
-
-`v-on` 绑定的表达式可以是一个方法名，或者是一个内联语句 (inline statement)，当存在修饰符时，也可以不提供表达式。当监听的是原生 DOM 事件时，如果绑定表达式是一个方法名 (method name)，该方法会接受原生 event 对象作为唯一参数 (在方法内部，`event` 对象始终可以访问)：
-```html
 <template>
   <!-- 使用 inline statement，可以为事件处理函数传递任意多个参数，特别地，$event 代表原生事件对象 -->
   <button @click="handler('hello','world',$event)">click</button>
@@ -411,17 +404,17 @@ export default {
 export default {
   // ...
   methods: {
-  // 当事件处理函数需要额外参数时，在v-on 中使用 inline statement
-  handler (p1, p1, e) {
-    console.log(p1) // => 'hello'
-    console.log(p1) // => 'world'
-    // e 是原生事件对象
-    console.log(e.target.nodeName) // => BUTTON
+    // 当事件处理函数需要额外参数时，在v-on 中使用 inline statement
+    handler (p1, p1, e) {
+      console.log(p1) // => 'hello'
+      console.log(p1) // => 'world'
+      // e 是原生事件对象
+      console.log(e.target.nodeName) // => BUTTON
 
-    //事实上原生事件对象始终可以通过 event 来访问
-    console.log(event.target.nodeName) // => BUTTON
+      //事实上原生事件对象始终可以通过 event 来访问
+      console.log(event.target.nodeName) // => BUTTON
+    }
   }
-}
 }
 </script>
 ```
