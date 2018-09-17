@@ -357,7 +357,7 @@ callback将在下一次 DOM 更新周期之后执行。当你更改了某些数�
 ## 内建指令
 ### v-on
 当该指令用于原生 html 元素时，监听的是原生DOM事件，当该指令用于组件时，监听的是组件自定义事件(`$emit` 触发):
-```html
+```
 <!-- 这里监听的是原生 click 事件 -->
 <button @click="handler1">click</button>
 
@@ -365,7 +365,7 @@ callback将在下一次 DOM 更新周期之后执行。当你更改了某些数�
 <myButton @click="handler2"></myButton>
 ```
 如果要在组件上监听原生 DOM 事件，可以使用 `.native` 修饰符：
-```html
+```
 <!-- 这里监听的是组件根元素上的原生 click 事件 -->
 <myButton @click.native="handler2"/>
 ```
@@ -381,15 +381,15 @@ callback将在下一次 DOM 更新周期之后执行。当你更改了某些数�
 export default {
   // ...
   methods: {
-  // 接受原生事件对象作为唯一参数
-  handler (e) {
-    // e 是原生事件对象
-    console.log(e.target.nodeName) // => BUTTON
+    // 接受原生事件对象作为唯一参数
+    handler (e) {
+      // e 是原生事件对象
+      console.log(e.target.nodeName) // => BUTTON
 
-    //事实上原生事件对象始终可以通过 event 来访问
-    console.log(event.target.nodeName) // => BUTTON
+      //事实上原生事件对象始终可以通过 event 来访问
+      console.log(event.target.nodeName) // => BUTTON
+    }
   }
-}
 }
 </script>
 ```
