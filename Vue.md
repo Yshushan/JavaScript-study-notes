@@ -287,7 +287,7 @@ export default {
     },
     created () {
       // 监听表达式
-      this.$watch(this.a.b.c, function (newVal, oldVal) {
+      this.$watch('a.b.c', function (newVal, oldVal) {
         // 当 this.a.b.c 的值改变时，被调用
       })
 
@@ -321,7 +321,7 @@ This is the alias of the global [`Vue.set`](https://vuejs.org/v2/api/#Vue-set).
 ### vm.$delete(target, key)
 This is the alias of the global [Vue.delete](https://vuejs.org/v2/api/#Vue-delete).
 ### vm.$on(event, callback)
-在当前 Vue 实例中监听自定义事件(由 `vm.$emit` 触发的事件)
+在当前 Vue 实例中监听在当前实例中自定义的事件(由 `vm.$emit` 触发的事件)，注意，触发和监听必须是在同一个实例中！在父作用域中只能使用`v-on`监听，使用`$on`监听无效，
 ```js
 vm.$on(`test`, function (msg) {
   console.log(msg)
@@ -350,6 +350,6 @@ new myComponent().$mount('#app')
 ### vm.$forceUpdate()
 Force the Vue instance to re-render. Note it does not affect all child components, only the instance itself and child components with inserted slot content.
 ### vm.$nextTick([callback])
-callback将在下一次 DOM 更新周期之后执行。当你更改了某些数据后可以立即调用这个方法，然后等待DOM更新。这个方法与全局方法 `vue.nextTick` 类似，但是这个方法的 callback 的 `this` 会自动绑定到当前Vue 实例对象。
+callback将在下一次 DOM 更新周期之后执行。当你更改了某些数据后可以立即调用这个方法，然后等待DOM更新。这个方法与全局方法 `vue.nextTick` 类似，不同之处是这个方法的 callback 的 `this` 会自动绑定到当前Vue 实例对象。
 ### vm.$destory()
 详情看[这里](https://vuejs.org/v2/api/#vm-destroy)。
