@@ -1,5 +1,7 @@
+```js
 //DOM常用方法与属性
 //获取节点
+
 document.getElementById(idValue) | element.getElementById(idValue)
 document.getElementsByTagName(tagName) | element.getElementsByTagName(tagName)
 document.getElementsByClassName(classValue) | element.getElementsByClassName(classValue) 
@@ -117,3 +119,8 @@ classlists.toggle(classname, boolValue)
 element.addEventListener(eventName,handler,captureMode) 
 // captureMode:true   capturing
 // captureMode:false  bubbling
+```
+
+## [dataset API](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset)
+
+## [Element Interface](https://developer.mozilla.org/en-US/docs/Web/API/Element)

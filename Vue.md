@@ -393,7 +393,7 @@ export default {
 }
 </script>
 ```
-如果绑定的表达式是一个内联语句，这个语句可以访问特殊的 `$event` 属性, 它代表原生事件对象：
+如果绑定的表达式是一个内联语句，这个语句可以访问特殊的 `$event` 属性, 如果监听的是原生 DOM 事件，它代表原生事件对象，如果监听的是组件自定义事件，它代表组件内部 `$emit` 传过来的参数：
 ```html
 <template>
   <!-- 使用 inline statement，可以为事件处理函数传递任意多个参数，特别地，$event 代表原生事件对象 -->
@@ -425,3 +425,22 @@ export default {
 <!-- 这等价于 -->
 <button @mousedown="handler1" @mouseup="handler2"></button>
 ```
+### v-bind
+动态绑定表达式的值到 attribute 或者组件的prop，当绑定的属性是`class`和`style`时，它们支持数组和对象绑定。
+
+v-bind 支持下列修饰符：
++ `.prop`：绑定的是 DOM property，而不是 HTML attribute ([看这里](https://stackoverflow.com/questions/6003819/what-is-the-difference-between-properties-and-attributes-in-html#answer-6004028))。如果是在组件上使用带有 `prop` 修饰符的 `v-on`，被绑定的属性将被设置到组件的`$el`上。
++ `.camel`：将 kebab-case 类型的 attribute name 转换为 camel-case 类型。
++ `.sync`：监听**更新绑定的值的自定义事件**的语法糖：
+  ```
+  <myComponent v-bind:propA.sync="someValue"/>
+  <!-- 等价于 -->
+  <myComponent v-bind:propA="someValue" v-on:update:propA="someValue=$event"/>
+  ```
+`v-bind` 支持直接绑定一个包含 name/value 键值对的对象:
+```
+<myComponent v-bind="{propA:value1, propB: value2}"/>
+<!-- 等价于 -->
+<myComponent :propA="value1" :propB="value2"/>
+```
+更多关于 `v-bind` 的用法，请看[这里](https://vuejs.org/v2/api/#v-bind)。
