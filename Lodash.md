@@ -1,1 +1,15 @@
-# Lodash
+# [Lodash](https://lodash.com/docs/4.17.10)
+### [_.after](https://lodash.com/docs/4.17.10#after)
+### [_.ary](https://lodash.com/docs/4.17.10#ary)
+### [_.before](https://lodash.com/docs/4.17.10#before)
+### [_.debounce](https://lodash.com/docs/4.17.10#debounce)
+### [_.defer](https://lodash.com/docs/4.17.10#defer)
+### [_.delay](https://lodash.com/docs/4.17.10#delay)
+### [_.once](https://lodash.com/docs/4.17.10#once)
+### [_.throttle](https://lodash.com/docs/4.17.10#throttle)
+### [_.clone](https://lodash.com/docs/4.17.10#clone)
+### [_.cloneDeep](https://lodash.com/docs/4.17.10#cloneDeep)
+### [_.cloneWith](https://lodash.com/docs/4.17.10#cloneWith)
+### [_.cloneDeepWith](https://lodash.com/docs/4.17.10#cloneDeepWith)
+### [_.times](https://lodash.com/docs/4.17.10#times)
+
