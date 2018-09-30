@@ -98,8 +98,8 @@ myHeaders.get('Content-Type') // => null
 + `method`: 请求的方法，例如：`GET`, `POST`。
 + `headers`: 请求头，可以是一个预先创建的 `Headers` 对象，或者是一个包含选项的对象字面量。
 + `body`: 任何你想要添加到请求中的 body，可以是一个 `Blob`, `BufferSource`, [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData), [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams), `USVString` 等对象。注意 `GET` 和 `HEAD` 请求不能包含这个选项。
-+ `mode`: 请求的模式，可以是 `'cors'`, `'no-cors'`, `'same-origin'`, `'navigate'`。
-+ `'credentials'`: 请求证书，可以是 `'omit'`, `'same-origin'`, `'include'`。
++ `mode`: 请求的模式，可以是 `'cors'`, `'no-cors'`, `'same-origin'`, `'navigate'`
++ `'credentials'`: 请求证书，可以是 `'omit'`, `'same-origin'`, `'include'`
 + `cache`: [cache 模式](https://developer.mozilla.org/en-US/docs/Web/API/Request/cache)，可以是 `'default'`, `'no-store'`, `'reload'`, `'no-cache'`, `'force-cache'`, `'only-if-cached'`
 + `redirect`: 重定向模式，可以是 `'follow'`, `'error'`, `'manual'`
 + `referrer`:
@@ -143,3 +143,21 @@ read-only 属性，请求的模式，它的值决定了跨域请求能否产生�
 + `cors`：允许跨域请求，例如访问第三方提供的各种各样的 API。
 + `navigate`
 ## Response
+
+## 跨域资源共享 [CORS (Cross Origin Resource Sharing)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+跨域资源共享 (CORS) 是一种机制，它使用额外的 HTTP 头去告诉浏览器，让运行在某个域上的 web 应用有权访问另一个域上的服务器上的资源。web 应用程序在请求与其自己不同源的资源时，就会发出跨源 HTTP 请求。
+
+出于安全原因，浏览器会限制从脚本中发起的跨源请求。例如，`XMLHttpRequest` 和 Fetch API 都遵循同源策略。这意味着，使用这些 API 的 web 应用只能请求与其本身同源的资源，除非来自其它源的响应包含正确的 CORS 头。
+
+CORS 标准的工作原理是，服务器通过添加新的 HTTP 头信息来描述允许哪些请求源可以使用浏览器来跨源访问这里的资源。此外，对于会对服务器端的数据产生副作用的 HTTP 请求方法，CORS 规范要求浏览器先使用 HTTP OPTIONS 方法发送预检 (preflight) 请求，来询问服务器是否支持该请求方法，在得到目标服务器的批准后，浏览器再发送真正的 HTTP 请求。服务器同时还可以在响应头信息中指示客户端是否应该随请求一起发送 credentials (包括 cookies 和 HTTP 身份认证信息)。
+
+CORS 失败时会导致错误，但是出于安全原因，JavaScript 代码无法使用关于错误的详细信息，代码仅仅只是知道有错误发生。要想知道到底发生了什么错误，你只能去查看浏览器的控制台。
+
+### 简单请求 (Simple Requests)
+有些请求不会触发 CORS 预检，这些请求称为**简单请求**。满足下面所有条件的请求是一个简单请求：
++ 请求方法是以下之一：
+  - `GET`
+  - `HEAD`
+  - `POST`
+
+### 预检请求 (Preflighted Requests)
