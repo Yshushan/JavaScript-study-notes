@@ -3,3 +3,5 @@ test.js
 index.html
 .vscode/
 nicholas.js
+node_modules/
+package*
