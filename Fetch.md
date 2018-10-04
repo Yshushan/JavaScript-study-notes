@@ -159,5 +159,48 @@ CORS 失败时会导致错误，但是出于安全原因，JavaScript 代码无�
   - `GET`
   - `HEAD`
   - `POST`
-
++ 除了由 user agent 自动设置的头字段之外，只允许手动设置以下头字段：
+  - `Accept`
+  - `Accept-Language`
+  - `Content-Language`
+  - `Content-Type`
+  - `DPR`
+  - `Downlink`
+  - `Save-Data`
+  - `Viewport-Width`
+  - `Width`
++ `Content-Type` 只允许是下列值之一：
+  - `application/x-www-form-urlencoded`
+  - `multipart/form-data`
+  - `text/plain`
++ 在请求中使用的任何 `XMLHttpRequestUpload` 对象上没有注册事件监听器。
++ 请求中没有使用 `ReadableStream` 对象。
 ### 预检请求 (Preflighted Requests)
+与简单请求不同的是，预检请求首先发送一个`OPTIONS`请求到目标域，用来确定是否真正的请求可以安全的发送。
+
+满足下列条件之一的请求是一个预检请求：
++ 请求方法是下列之一：
+  - `PUT`
+  - `DELETE`
+  - `CONNECT`
+  - `OPTIONS`
+  - `TRACE`
+  - `PATCH`
++ 除了由 user agent 自动设置的头字段之外，不能包含以下头字段：
+  - `Accept`
+  - `Accept-Language`
+  - `Content-Language`
+  - `Content-Type`
+  - `DPR`
+  - `Downlink`
+  - `Save-Data`
+  - `Viewport-Width`
+  - `Width`
++ `Content-Type` 不是下列值之一：
+  - `application/x-www-form-urlencoded`
+  - `multipart/form-data`
+  - `text/plain`
++ 在请求中使用的 `XMLHttpRequestUpload` 对象上注册了一个或多个事件监听器。
++ 请求使用了 `ReadableStream` 对象。
+
+即不是简单请求的请求就是预检请求
