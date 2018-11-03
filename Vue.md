@@ -210,7 +210,7 @@ export default {
 > 注意：Vue 实例不代理访问以 `'_'` 和 `'$'` 开头的属性，对于这样的属性，你只能使用 `$data` 来访问。
 
 ### vm.$props
-一个包含组件当前接收的props的对象，Vue 实例也代理了它 props 选项的属性的访问权：
+一个包含组件当前接收的 props 的对象，Vue 实例也代理了它 props 选项的属性的访问权：
 ```js
 //Parent.vue
 <Child propA="hello"/>
@@ -295,7 +295,7 @@ export default {
       this.$watch(function () {
         return this.d + this.e
       }, function (newVal, oldVal) {
-        // 当 this.d + this.e 的值发生变化是，被调用
+        // 当 this.d + this.e 的值发生变化时，被调用
       })
     }
   }
@@ -323,7 +323,7 @@ This is the alias of the global [Vue.delete](https://vuejs.org/v2/api/#Vue-delet
 ### vm.$on(event, callback)
 在当前 Vue 实例中监听在当前实例中自定义的事件(由 `vm.$emit` 触发的事件)，注意，触发和监听必须是在同一个实例中！在父作用域中只能使用`v-on`监听，使用`$on`监听无效，
 ```js
-vm.$on(`test`, function (msg) {
+vm.$on('test', function (msg) {
   console.log(msg)
 })
 vm.$emit('test', 'hi')
@@ -350,13 +350,13 @@ new myComponent().$mount('#app')
 ### vm.$forceUpdate()
 Force the Vue instance to re-render. Note it does not affect all child components, only the instance itself and child components with inserted slot content.
 ### vm.$nextTick([callback])
-callback将在下一次 DOM 更新周期之后执行。当你更改了某些数据后可以立即调用这个方法，然后等待DOM更新。这个方法与全局方法 `vue.nextTick` 类似，不同之处是这个方法的 callback 的 `this` 会自动绑定到当前Vue 实例对象。
+callback 将在下一次 DOM 更新周期之后执行。当你更改了某些数据后可以立即调用这个方法，然后等待DOM更新。这个方法与全局方法 `vue.nextTick` 类似，不同之处是这个方法的 callback 的 `this` 会自动绑定到当前 Vue 实例对象。
 ### vm.$destory()
 详情看[这里](https://vuejs.org/v2/api/#vm-destroy)。
 
 ## 内建指令
 ### v-on
-当该指令用于原生 html 元素时，监听的是原生DOM事件，当该指令用于组件时，监听的是组件自定义事件(`$emit` 触发):
+当该指令用于原生 html 元素时，监听的是原生DOM事件，当该指令用于组件时，监听的是组件自定义事件(由`$emit` 触发):
 ```
 <!-- 这里监听的是原生 click 事件 -->
 <button @click="handler1">click</button>
@@ -393,18 +393,18 @@ export default {
 }
 </script>
 ```
-如果绑定的表达式是一个内联语句，这个语句可以访问特殊的 `$event` 属性, 如果监听的是原生 DOM 事件，它代表原生事件对象，如果监听的是组件自定义事件，它代表组件内部 `$emit` 传过来的参数：
+如果绑定的表达式是一个内联语句，这个语句可以访问特殊的 `$event` 属性, 如果监听的是原生 DOM 事件，它代表原生事件对象：
 ```html
 <template>
-  <!-- 使用 inline statement，可以为事件处理函数传递任意多个参数，特别地，$event 代表原生事件对象 -->
-  <button @click="handler('hello','world',$event)">click</button>
+  <!-- 使用 inline statement，可以为事件处理函数传递任意多个参数，特别地，这里 $event 代表原生事件对象 -->
+  <button @click="handler('hello', 'world', $event)">click</button>
 </template>
 
 <script>
 export default {
   // ...
   methods: {
-    // 当事件处理函数需要额外参数时，在v-on 中使用 inline statement
+    // 当事件处理函数需要额外参数时，在 v-on 中使用 inline statement
     handler (p1, p1, e) {
       console.log(p1) // => 'hello'
       console.log(p1) // => 'world'
@@ -418,6 +418,45 @@ export default {
 }
 </script>
 ```
+如果 `v-on` 用于组件，它监听的是组件自定义事件：
+```html
+<!-- child.vue -->
+<!-- 在原生 click 事件里触发自定义的 custom 事件，并向上传递两个参数 -->
+<template>
+  <button @click="$emit('custom', 'hello', 'world')">click</button>
+</template>
+```
+```html
+<!-- parent.vue -->
+<template>
+  <!-- 如果使用内联语句，可以直接访问 $event 关键字，它代表子组件内部 `$emit` 传过来的参数，注意通过 $event 只能获得传过来的第一参数 -->
+  <!-- 即这里 $event 是 'hello' -->
+  <Child @custom="val=$event"></Child>
+
+  <!-- 如果需要传递多个参数，请绑定方法名，而不是内联语句 -->
+  <Child @custom="customHandler"></Child>
+</template>
+
+<script>
+  // ...
+  export default {
+    // ...
+    data () {
+      return {
+        val: ''
+      }
+    },
+    methods: {
+      // 可以接受自定义事件传递过来的任意个参数
+      customHandler (p1, p2) {
+        console.log(p1) // => hello
+        console.log(p2 // => world
+      }
+    }
+  }
+</script>
+```
+如果监听的是组件自定义事件，它代表组件内部 `$emit` 传过来的参数：
 `v-on` 还可以绑定一个包含 eventName/handler 键值对的对象：
 ```html
 <button v-on="{mousedown: handler1, mouseup: handler2}"></button>
@@ -425,7 +464,7 @@ export default {
 <!-- 这等价于 -->
 <button @mousedown="handler1" @mouseup="handler2"></button>
 ```
-### v-bind
+### [v-bind](https://vuejs.org/v2/api/#v-bind)
 动态绑定表达式的值到 attribute 或者组件的prop，当绑定的属性是`class`和`style`时，它们支持数组和对象绑定。
 
 v-bind 支持下列修饰符：
@@ -439,8 +478,21 @@ v-bind 支持下列修饰符：
   ```
 `v-bind` 支持直接绑定一个包含 name/value 键值对的对象:
 ```
-<myComponent v-bind="{propA:value1, propB: value2}"/>
+<myComponent v-bind="{propA: value1, propB: value2}"/>
 <!-- 等价于 -->
 <myComponent :propA="value1" :propB="value2"/>
 ```
 更多关于 `v-bind` 的用法，请看[这里](https://vuejs.org/v2/api/#v-bind)。
+
+## 特殊属性
+### [key](https://vuejs.org/v2/api/#key)
+### [ref](https://vuejs.org/v2/api/#ref)
+### [slot](https://vuejs.org/v2/api/#slot)
+### [is](https://vuejs.org/v2/api/#is)
+
+## 内建组件
+### [component](https://vuejs.org/v2/api/#component)
+### [transition](https://vuejs.org/v2/api/#transition)
+### [transition-group](https://vuejs.org/v2/api/#transition-group)
+### [keep-alive](https://vuejs.org/v2/api/#keep-alive)
+### [slot](https://vuejs.org/v2/api/#slot-1)

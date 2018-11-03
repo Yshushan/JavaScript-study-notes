@@ -10,7 +10,7 @@
 
 + 跳过 prompts，使用之前保存在用户本地主目录下的 preset（`.vuerc` 文件），或者使用 romote preset (GitHub repo)：`-p, --preset`
 
-      vue create -p <app-name>
+      vue create -p <preset-name> <app-name>
       vue create -p username/repo <app-name>
     
 + 使用 GUI：
