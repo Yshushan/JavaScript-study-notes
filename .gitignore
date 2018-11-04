@@ -1,6 +1,7 @@
 .idea/
-test*
-index.html
 .vscode/
 node_modules/
-package*
+*.js
+*.html
+*.css
+*.json
