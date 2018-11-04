@@ -1,7 +1,6 @@
 .idea/
-test.js
+test*
 index.html
 .vscode/
-nicholas.js
 node_modules/
 package*
