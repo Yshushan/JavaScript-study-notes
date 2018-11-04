@@ -10,7 +10,7 @@
 
 + 跳过 prompts，使用之前保存在用户本地主目录下的 preset（`.vuerc` 文件），或者使用 romote preset (GitHub repo)：`-p, --preset`
 
-      vue create -p <app-name>
+      vue create -p <preset-name> <app-name>
       vue create -p username/repo <app-name>
     
 + 使用 GUI：
@@ -220,12 +220,60 @@ module.exports={
 ### lintOnSave
 开发过程中是否在文件保存时执行代码检查 (lint-on-save)，默认值为 `true`。这个选项只有当项目中安装了 `@vue/cli-plugin-eslint` 才会生效。
 
-当该值为 `true` 时，`eslint-loader` 只会在 terminal 中输出 warning，不会导致编译失败。
-如果你想让错误在浏览器中输出，可以将 `lintOnSave` 设置为 `'error'`，这将迫使 `eslint-loader` 总是给出 error，同时也意味着编译会失败。
+当该值为 `true` 时，`eslint-loader` 只会在 terminal 中输出 warning，不会导致编译失败。如果你想让错误在浏览器中输出，可以将 `lintOnSave` 设置为 `'error'`，这将迫使 `eslint-loader` 总是给出 error，同时也意味着编译会失败。
 
-当 `lintOnSave` 为“真值”时，`eslint-loader` 在开发环境和生产环境都会执行检测，如果你想在生产构建时关闭 `eslint-loader`，可以这样配置：
+当 `lintOnSave` 为**真值**时，`eslint-loader` 在开发环境和生产环境都会执行检测，如果你想在生产构建下关闭 `eslint-loader`，可以这样配置：
 ```js
 module.exports = {
   lintOnSave: process.env.NODE_ENV !== 'production'
 }
 ```
+
+### transpileDependencies
+默认情况下，babel 编译时，`babel-loader` 会忽略 `node_modules` 里的所有文件，如果你想显示的编译 `node_modules` 中的某些文件，可以将这些文件列在这个选项的数组中，默认值是 `[]`。
+
+### productionSourceMap
+默认值为 `true`，如果不想在生产环境构建中使用 source map，可以将该选项设为 `false`，这样可以加快构建速度。
+
+### crossorigin
+为生成的 HTML 的 `<link rel="stylesheet">` 和 `<script>` 标签配置 `crossorigin` 属性。
+这个选项只影响由 `html-webpack-plugin` 注入的标签，不会影响原来就存在于模板 (`public/index.html`) 中的标签。默认值 `undefined`
+
+### css.modules
+默认情况下，在 JavaScript 中只有名字以 `*.module.[ext]` 结尾的文件才会被当作 CSS 模块导入，如果设置这个选项的值为 `true`，你可以去掉文件名中的 `.module`，所有名为 `*.(css|scss|sass|less|styl(us)?)` 的文件都会被当作是 CSS 模块。
+
+### [css.extract](https://cli.vuejs.org/config/#css-extract)
+是否提取组件中的 CSS 到单独的 CSS 文件中，而不是内联在 JavaScript 中动态注入。
+
+在开发模式下，这个选项默认为 `false`，因为它与 CSS 热重载不兼容，但是你也可以把它设置为 `true` 来强制提取出 CSS。
+
+在生产模式下，这个选项默认为 `true`。
+
+### [css.loaderOptions](https://cli.vuejs.org/config/#css-loaderoptions)
+给 CSS 相关的 loader 传递配置选项：
+```js
+module.exports = {
+    css: {
+        loaderOptions: {
+            css: {
+                // options here will be passed to css-loader
+            },
+            postcss: {
+                // options here will be passed to postcss-loader
+            }
+        }
+    }
+}
+```
+支持以下这些 loader：
+- css-loader
+- postcss-loader
+- sass-loader
+- less-loader
+- stylus-loader
+
+### [devServer](https://cli.vuejs.org/config/#devserver)
+支持所有的 [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) 选项。
+
+### [devServer.proxy](https://cli.vuejs.org/config/#devserver-proxy)
+如果你的前端应用和后端 API 服务不是运行在同一主机上，则需要在开发期间将 API 请求代理另一台主机的 API 服务器。

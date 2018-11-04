@@ -1,5 +1,7 @@
+```js
 //DOM常用方法与属性
 //获取节点
+
 document.getElementById(idValue) | element.getElementById(idValue)
 document.getElementsByTagName(tagName) | element.getElementsByTagName(tagName)
 document.getElementsByClassName(classValue) | element.getElementsByClassName(classValue) 
@@ -30,6 +32,8 @@ element.style.backgroundColor='red'
 element.style.xxx //获取xxx样式值，但是只能获取内联样式
 element.style.setProperty('color','red')
 element.style.removeProperty('color')
+//获取元素上生效的所有样式, read-only
+window.getComputedStyle(element[,pesudo-element])
 
 //常用属性
 document.documentElement //Return the <html> element
@@ -117,3 +121,18 @@ classlists.toggle(classname, boolValue)
 element.addEventListener(eventName,handler,captureMode) 
 // captureMode:true   capturing
 // captureMode:false  bubbling
+```
+
+## [dataset API](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset)
+
+## [Element Interface](https://developer.mozilla.org/en-US/docs/Web/API/Element)
+
+## Document Interface
+### Properties
+```js
+Document.cookie
+Document.childElementCount
+Document.children
+Document.firstElementChild
+Document.lastElementChild
+```

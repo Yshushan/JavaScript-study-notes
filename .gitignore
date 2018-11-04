@@ -1,5 +1,8 @@
 .idea/
-test.js
-index.html
 .vscode/
-nicholas.js
+node_modules/
+*.js
+*.html
+*.css
+*.json
+js*.md
