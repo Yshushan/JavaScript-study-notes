@@ -1,6 +1,6 @@
 # Node.js
 
-## Events
+## [Events](https://nodejs.org/dist/latest-v10.x/docs/api/events.html)
 ### emitter.on(eventName, listener) / emitter.addListener(eventName, listener)
 注册 `eventName` 事件，并在它的事件监听器数组的末尾添加 `listener` 事件监听器，基本用法：
 ```js
@@ -117,9 +117,6 @@ const fooListeners = myemitter.listeners('foo')  // [ [Function], [Function] ]
 ### emitter.rawListeners(eventName)
 返回指定的事件上注册的所有监听器的数组的拷贝，详细请看[这里](https://nodejs.org/dist/latest-v10.x/docs/api/events.html#events_emitter_rawlisteners_eventname)。
 
-### emitter.listenerCount(eventName)
-返回指定事件名注册的监听器的个数，等价于 `emitter.listeners(eventName).length`
-
 ### emitter.eventNames()
 返回该事件对象上注册的所有事件名的数组，数组的元素可以是 `String` 或者 `Symbol`：
 ```js
@@ -169,3 +166,149 @@ myemitter.emit('my-event')
 
 > **注意：`on`, `off`, `once`, `addListener`, `removeListener`, `prependListener`, `prependOnceListener`, `removeAllListeners` 这些方法都返回原事件对象的引用，所以你可以进行链式调用。**
 
+## [File System](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html)
+
+### fs.appendFile(path, data[, options], callback)
+异步地向指定的文件末尾添加数据，如果指定的文件不存在，将创建该文件。
+
+数据 `data` 可以是字符串或者一个 `Buffer`。
+
+`options` 可选，如果是个字符串，它指定文件的编码形式，默认值是 `utf8`。
+
+`callback` 回调函数在操作完成之后执行，接受可能的 `Error` 对象作为参数。
+```js
+const fs = require('fs')
+fs.appendFile('message.txt', 'data to append', err => {
+  if(err) throw err  // 如果操作成功，err 将是 null or undefined
+  console.log('The "data to append" was appended to file!')
+})
+```
+### fs.appendFileSync(path, data[, options])
+`appendFile` 的同步版本，除了不支持 `callback`，其它参数与 `appendFile` 完全相同
+```js
+try {
+  fs.appendFileSync('message.txt', 'data to append', 'utf8')
+  console.log('The "data to append" was appended to file!')
+} catch {
+  /* Handle the error */
+}
+```
+### fs.close(fd, callback)
+
+### fs.closeSync(fd)
+
+### [fs.constants](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_constants)
+
+### [fs.copyFile(src, dest[, flags], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_copyfile_src_dest_flags_callback)
+异步的将 `src` 复制到 `dest`。
+
+默认情况下，如果 `dest` 已经存在，它的内容会被覆盖掉。
+
+`flags` 是一个可选的整数，用于指定复制操作的行为
+- `fs.constants.COPYFILE_EXCL`: 如果 `dest` 已存在，复制操作会失败
+- `fs.constants.COPYFILE_FICLONE`: The copy operation will attempt to create a copy-on-write reflink. If the platform does not support copy-on-write, then a fallback copy mechanism is used.
+- `fs.constants.COPYFILE_FICLONE_FORCE`: The copy operation will attempt to create a copy-on-write reflink. If the platform does not support copy-on-write, then the operation will fail.
+
+`callback` 在操作结束后调用，接受可能的 exception 作为参数。
+```js
+const fs = require('fs')
+fs.copyFile('source.js', 'destination.js', err => {
+  if (err) throw err
+  console.log('source.js was copies to destination.js')
+})
+
+const { COPYFILE_EXCL } = fs.constants
+
+// By using COPYFILE_EXCL, the operation will fail if destination.js exists.
+fs.copyFile('source.js', 'destination.js', COPYFILE_EXCL, callback)
+```
+
+### [fs.copyFileSync(src, dest[, flags])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_copyfilesync_src_dest_flags)
+`fs.copyFile` 的同步版本
+
+### [fs.createReadStream(path[, options])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_createreadstream_path_options)
+
+### [fs.createWriteStream(path[, options])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_createwritestream_path_options)
+
+### [fs.open(path, flags[, mode], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_open_path_flags_mode_callback)
+
+### [fs.openSync(path, flags[, mode])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_opensync_path_flags_mode)
+
+### [fs.read(fd, buffer, offset, length, position, callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
+
+### [fs.readSync(fd, buffer, offset, length, position)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position)
+
+### [fs.readdir(path[, options], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_readdir_path_options_callback)
+
+### [fs.readdirSync(path[, options])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_readdirsync_path_options)
+
+### [fs.readFile(path[, options], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_readfile_path_options_callback)
+
+### [fs.readFileSync(path[, options])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_readfilesync_path_options)
+
+### [fs.rename(oldPath, newPath, callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_rename_oldpath_newpath_callback)
+
+### [fs.renameSync(oldPath, newPath)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_renamesync_oldpath_newpath)
+
+### [fs.rmdir(path, callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_rmdir_path_callback)
+
+### [fs.rmdirSync(path)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_rmdirsync_path)
+
+### [fs.unlink(path, callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_unlink_path_callback)
+
+### [fs.unlinkSync(path)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_unlinksync_path)
+
+### [fs.watch(filename[, options][, listener])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_watch_filename_options_listener)
+Watch for changes on filename, where filename is either a file or a directory.
+
+The second argument is optional. If options is provided as a string, it specifies the encoding. Otherwise options should be passed as an object.
+
+On most platforms, 'rename' is emitted whenever a filename appears or disappears in the directory.
+
+The listener callback is attached to the 'change' event fired by fs.FSWatcher, but it is not the same thing as the 'change' value of eventType.
+
+### [fs.writeFile(file, data[, options], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_writefile_file_data_options_callback)
+Asynchronously writes data to a file, replacing the file if it already exists. data can be a string or a buffer.
+
+It is unsafe to use fs.writeFile() multiple times on the same file without waiting for the callback. For this scenario, `fs.createWriteStream()` is recommended.
+
+If a file descriptor is specified as the file, it will not be closed automatically.
+
+### [fs.writeFileSync(file, data[, options])](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_writefilesync_file_data_options)
+
+### [fs.write(fd, buffer[, offset[, length[, position]]], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
+
+### [fs.write(fd, string[, position[, encoding]], callback)](https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_write_fd_string_position_encoding_callback)
+
+## [Path](https://nodejs.org/dist/latest-v10.x/docs/api/path.html)
+```js
+const path = require('path')
+```
+### path.basename(path[, ext])
+### path.dirname(path)
+### path.format(pathObject)
+### path.resolve([...paths])
+### path.isAbsolute(path)
+### path.normalize(path)
+### path.parse(path)
+### path.relative(from, to)
+### path.join([...paths])
+### path.extname(path)
+### path.sep
+### path.delimiter
+### path.posix
+### path.win32
+
+## [Query String](https://nodejs.org/dist/latest-v10.x/docs/api/querystring.html)
+```js
+const qs = require('querystring')
+```
+### qs.parse(str[, sep[, eq[, options]]])
+### qs.stringify(obj[, sep[, eq[, options]]])
+
+## [URL](https://nodejs.org/dist/latest-v10.x/docs/api/url.html)
+```js
+const url = require('url')
+```
+
+## [HTTP](https://nodejs.org/dist/latest-v10.x/docs/api/http.html)

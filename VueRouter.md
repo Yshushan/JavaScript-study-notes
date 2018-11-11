@@ -387,7 +387,7 @@ const router = new VueRouter({
       path: '/foo',
       component: Foo,
       // a meta field
-      meta: { title: "home" }
+      meta: { title: 'home' }
       children: [
         {
           path: 'bar',
@@ -475,8 +475,8 @@ scrollBehavior (to, from, savedPosition) {
 scrollBehavior (to, from, savedPosition) {
   if (to.hash) {
     return {
-      selector: to.hash
-      // , offset: { x: 0, y: 10 }
+      selector: to.hash,
+      // offset: { x: 0, y: 10 }
     }
   }
 }
