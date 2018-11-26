@@ -386,8 +386,6 @@ db.collection('inventory').findOne(
 #### collection.findOneAndReplace
 #### collection.findOneAndUpdate
 #### collection.updateOne
-#### collection.updateMany
-#### collection.deleteOne(filter, update, options, updateWriteOpCallback) => promise
 `filter` 类似 `find` 方法的 `query` 参数
 
 Update Operators
@@ -402,7 +400,32 @@ Update Operators
   + `$unset`: deletes a particular field
   + `$currentDate`: sets the value of a field to the current date, either as a Date or a timestamp
 + Array Update Operator
-  + `$`: The positional $ operator identifies an element in an array to update without explicitly specifying the position of the element in the array.
+  + `$`: The positional `$` operator identifies an element in an array to update without explicitly specifying the position of the element in the array.
+  + `$[]`: The all positional operator `$[]` indicates that the update operator should modify all elements in the specified array field.
+  + `$[<identifier>]`: The filtered positional operator `$[<identifier>]` identifies the array elements that match the `arrayFilters` conditions for an update operation
+
+
+```js
+// 'arrayField.$' 用于更新满足查询条件的数组的单个元素，查询条件中必须要包含数组字段，且不能和 { upsert: true } 搭配使用
+// 当不知道要更新的数组元素具体在哪个索引位置时，就可以使用 '$' 更新操作符，如果提前知道具体的索引位置，使用 dot notation
+//例如如下操作，将所有满足查询条件（grades组数包含大于100的元素）的 document 的 grades 数组中第一个匹配的元素(第一个大于100的元素)设置为100
+students.updateMany(
+  { grades: { $gt: 100 } },
+  { $set: { 'grades.$': 100 } },
+  (err, res) => {}
+)
+
+// 'arrayField.$[]' 会更新满足条件的数组的所有元素，例如下面会将第一个满足条件的 document 的 grades 数组元素全部设置为100
+students.updateOne(
+  { grades: { $gt: 100 } },
+  { $set: { 'grades.$[]': 100 } },
+  (err, res) => {}
+)
+
+// '$[<identifier>]' 与 'arrayFilters' options 配合使用，用于在满足查询条件的 document(s) 中更新满足 'arrayFilters' 条件的所有数组元素
+```
+#### collection.updateMany
+#### collection.deleteOne(filter, update, options, updateWriteOpCallback) => promise
 #### collection.deleteMany
 #### collection.replaceOne
 
