@@ -3,6 +3,9 @@
 + 通过 prompts 手动选择需要的特性：
 
       vue create <app-name>
+      
+      # 在 Git Bash 中使用 
+      winpty vue.cmd create <app-name>
 
 + 跳过 prompts，使用默认的 preset（babel + eslint)： `-d, --default`
 
@@ -12,7 +15,8 @@
 
       vue create -p <preset-name> <app-name>
       vue create -p username/repo <app-name>
-    
+  > Git bash 中使用 `winpty vue.cmd create <app-name>`
+
 + 使用 GUI：
 
       vue ui
@@ -20,7 +24,7 @@
 在创建项目的过程中 Vue 会根据你选择的特性预安装一些 plugin，如果你想在已存在的项目的再添加一些 plugin，可以使用 `vue add` 命令，例如: 
 
     vue add @vue/eslint
-    
+
 通过该命令，Vue 会将 `@vue/eslint` 解析成该包的全名 `@vue/cli-plugin-eslint` (所以上面的命令等价于 `vue add @vue/cli-plugin-eslint`)，然后通过 `npm` 安装，并调用它的 `generator` 生成相关配置文件，注入到内部 `webpack` 中。
 
 > 注意： `vue add` 命令是专为 Vue CLI plugins 提供的，包括 Vue CLI build-in plugins（以 `@vue/cli-plugin-` 为前缀）和第三方 Vue CLI plugins（以 `vue-cli-plugin-` 或 `@scope/vue-cli-plugin-` 为前缀)，对于常规的 npm packages，仍然需要使用 npm 命令来安装。
@@ -126,9 +130,10 @@ VUE_APP_BAR=bar
 ```
 被加载的环境变量可以被所有的 `vue-cli-service` 命令，插件（plugins）以及依赖项（dependencies）使用。
 > **关于优先级**
+>
 > + 指定了具体 mode 的环境变量文件(`.env.[mode]`)具有比普通环境变量文件(`.env`)更高的优先级。
 > + Vue CLI 启动时已经存在的环境变量具有最高的优先级，且不会被 `.env` 文件覆盖。
-  
+
 ### 模式（mode）
 Vue CLI 项目有三种环境模式:
 ```
@@ -168,7 +173,7 @@ console.log(process.env.VUE_APP_BAR)
 你可以将某个入口文件构建成库(library)：
 
     vue-cli-service build --target lib --name mylib [entry]
-    
+
 入口文件 `entry` 可以是一个 `.js` 或者 `.vue` 文件，如果没有指定 `entry`，默认将 `src/App.vue` 作为 `entry`
 
 一个 library build 的输出目录如下：

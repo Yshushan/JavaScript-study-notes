@@ -34,7 +34,7 @@ export default {
     computed: {
         // 使用 $store 直接导入
         count () {
-            return this.$store.count
+            return this.$store.state.count
         },
 
         // 使用 'mapState':
@@ -219,7 +219,7 @@ export default {
         // 使用别名：
         ...mapMutations({
             add: 'increment', // this.add() => this.$store.commit('increment')
-            addBy: 'incrementBy' // this.addBy(payload) => this.$store.commit('increment', payload)
+            addBy: 'incrementBy' // this.addBy(payload) => this.$store.commit('incrementBy', payload)
         })
     }
 }
@@ -230,7 +230,7 @@ export default {
 
 ## Actions
 Actions 与 mutations 有点相似，但是它们有两个重要的区别：
-+ 在 action 里不直接更改状态，而是 commit mutation
++ 在 action 里不直接更改状态，而是通过 commit mutation
 + 在 action 中可以进行任意的异步操作
 
 注册 action ：
@@ -369,7 +369,7 @@ actions: {
 
 由于使用单一状态树 (single state tree)，应用里的所有共享状态都被包含在同一个对象中。随着我们应用规模变的越来越大，这个store 也会膨胀的很大，这可能不是好事，也难以维护。
 
-Vuex 允许你将 store 分割生小的模块，每个模块包含自己 `state`, `getters`, `mutations`, `actions`:
+Vuex 允许你将 store 分割成小的模块，每个模块包含自己 `state`, `getters`, `mutations`, `actions`:
 ```js
 const moduleA = {
   state: { ... },
@@ -667,7 +667,7 @@ const store = new Vuex.Store({
 ```js
 <input v-model="message">
 ```
-如果 `message` 是从 Vuex store 中导入的 state生成的计算属性，因为 `v-model` 双向绑定的特性，当用户在输入框中输入内容时，`v-model` 将试图直接去修改 `message` 的值，这将导致一个错误，因为在严格模式下，store state 的修改必须在 mutation handler 里进行。
+如果 `message` 是从 Vuex store 中导入的 state 生成的计算属性，因为 `v-model` 双向绑定的特性，当用户在输入框中输入内容时，`v-model` 将试图直接去修改 `message` 的值，这将导致一个错误，因为在严格模式下，store state 的修改必须在 mutation handler 里进行。
 
 要解决这个问题，一个方法是将 `v-model` 中更新数据的部分分离出来，来定制它的行为：
 ```html
@@ -714,7 +714,7 @@ export default {
   }
 }
 </script>
-``` 
+```
 ```js
 // store.js
 
