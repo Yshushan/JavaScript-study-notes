@@ -399,12 +399,19 @@ Update Operators
   + `$setOnInsert`: If an update operation with `upsert: true` results in an insert of a document, then `$setOnInsert` assigns the specified values to the fields in the document. If the update operation does not result in an insert, `$setOnInsert` does nothing.
   + `$unset`: deletes a particular field
   + `$currentDate`: sets the value of a field to the current date, either as a Date or a timestamp
-+ Array Update Operator
++ [Array Update Operator](https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/)
   + `$`: The positional `$` operator identifies an element in an array to update without explicitly specifying the position of the element in the array.
   + `$[]`: The all positional operator `$[]` indicates that the update operator should modify all elements in the specified array field.
-  + `$[<identifier>]`: The filtered positional operator `$[<identifier>]` identifies the array elements that match the `arrayFilters` conditions for an update operation
-
-
+  + `$[<identifier>]`: The filtered positional operator `$[<identifier>]` identifies the array elements that match the `arrayFilters` conditions for an update operation. 
+  + `$addToSet`: The `$addToSet` operator adds a value to an array unless the value is already present, in which case `$addToSet` does nothing to that array. `$addToSet` only ensures that there are no duplicate items added to the set and does not affect existing duplicate elements.
+  + `$push`: The `$push` operator appends a specified value to an array
+  + `$pull`: The `$pull` operator removes from an existing array all instances of a value or values that match a specified condition.
+  + `$pullAll`: The `$pullAll` operator removes all instances of the specified values from an existing array. Unlike the `$pull` operator that removes elements by specifying a query, `$pullAll` removes elements that match the listed values.
+  + `$pop`: The `$pop` operator removes the first or last element of an array. Pass `$pop` a value of `-1` to remove the first element of an array and `1` to remove the last element in an array.
+  + `$each`: The `$each` modifier is available for use with the `$addToSet` operator and the `$push` operator.
+  + `$position`: The `$position` modifier specifies the location in the array at which the `$push` operator inserts elements. Without the `$position` modifier, the `$push` operator inserts elements to the end of the array. See `$push` modifiers for more information. To use the `$position` modifier, it must appear with the $each modifier.
+  + `$slice`: The `$slice` modifier limits the number of array elements during a `$push` operation. To project, or return, a specified number of array elements from a read operation, see the `$slice` projection operator instead. To use the `$slice` modifier, it must appear with the `$each` modifier. You can pass an empty array [] to the `$each` modifier such that only the `$slice` modifier has an effect.
+  + `$sort`: The `$sort` modifier orders the elements of an array during a `$push` operation. To use the `$sort` modifier, it must appear with the `$each` modifier. You can pass an empty array `[]` to the `$each` modifier such that only the `$sort` modifier has an effect.
 ```js
 // 'arrayField.$' 用于更新满足查询条件的数组的单个元素，查询条件中必须要包含数组字段，且不能和 { upsert: true } 搭配使用
 // 当不知道要更新的数组元素具体在哪个索引位置时，就可以使用 '$' 更新操作符，如果提前知道具体的索引位置，使用 dot notation
@@ -423,6 +430,11 @@ students.updateOne(
 )
 
 // '$[<identifier>]' 与 'arrayFilters' options 配合使用，用于在满足查询条件的 document(s) 中更新满足 'arrayFilters' 条件的所有数组元素
+students.updateMany(
+  { gender: 'female' },
+  { $inc: {'grades.$[t].questions.$[score]': 2} }, // 这里 questions 是一个 nested Array
+  { arrayFilters: [ { 't.type': 'quiz' }, { score: { $gte: 8 } } ] }
+)
 ```
 #### collection.updateMany
 #### collection.deleteOne(filter, update, options, updateWriteOpCallback) => promise
