@@ -41,7 +41,7 @@ Vue.use(Vuetify, {
 ```html
 <v-icon>mdi-{name}</v-icon>
 ```
-### Font Awesome
+### Font Awesome 5
 #### Install
 ##### CND
 ```html
