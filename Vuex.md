@@ -64,7 +64,7 @@ Vuex stores 被设计成响应式的 (reactive)，当 `store`
 ## Getters
 同组件里的 `computed` 属性一样，可以在 Vuex 里定义 `getters`：
 ```js
-const store = new new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     todos: [
       { id: 1, text: '...', done: true },
