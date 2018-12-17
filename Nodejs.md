@@ -312,3 +312,198 @@ const url = require('url')
 ```
 
 ## [HTTP](https://nodejs.org/dist/latest-v10.x/docs/api/http.html)
+
+## [Crypto](https://nodejs.org/dist/latest-v10.x/docs/api/crypto.html)
+### Methods
+#### [crypto.createCipheriv(algorithm, key, iv[,options])](https://nodejs.org/dist/latest-v10.x/docs/api/crypto.html#crypto_crypto_createcipheriv_algorithm_key_iv_options)
+使用指定的 `algorithm`, `key`, `iv` 创建并返回一个 `Cipher` 对象。
+
+`algorithm` 是加密算法， `key` 用于加密算法，`iv` 是一个 initialization vector, 所有参数都必须是 `utf8` 编码的字符串或 `Buffer` 或 `TypedArray` 或 `DataView` 类型，如果不需要 innitialization vector, `iv` 可以是 `null`,
+
+innitialization vector 应该是不可预测且唯一，详细请看文档。
+
+#### crypto.scrypt(password, salt, keylen[,options], callback)
+基于密码的密钥生成函数（password-based key derivation function), 同步版本使用 `crypto.scryptSync(password, salt, keylen[,options])`
+
+`salt` 应该尽可能唯一，建议是至少16字节长度的随机值
+
+`callback` 接受两个参数 `err` 和 `derivedKeyBuf`, `derivedKeyBuf` 是一个 `Buffer` 
+
+```js
+const crypto = require('crypto')
+
+crypto.scrypt('secret', 'salt', 64, (err, derivedKeyBuf) => {
+    if(err) throw  err
+    console.log(derivedKeyBuf.toString('hex'))
+})
+```
+#### crypto.randomBytes(size[, callback])
+生成加密的强伪随机数，`size` 代表生成的字节长度， 如果提供 `callback`, 异步生成，否则同步生成。`callback` 接受两个参数 `err` 和 `buf`, `buf` 是一个包含生成字节的 `Buffer`
+```js
+// asynchronous
+crypto.randomBytes(64, (err, buf) => {
+    if(err) throw err
+    console.log(buf.toString('hex'))
+})
+
+// synchronous
+const buf = crypto.randomBytes(64)
+console.log(buf.toString('hex'))
+```
+#### crypto.createHash(algorithm[, options])
+使用给定的算法生成并返回一个 `Hash` 对象，该 hash 对象用于生成 hash 摘要
+```js
+const algorithm = 'sha256' // 'sha256', 'sha512' etc
+const hash = crypto.createHash(algorithm)
+```
+#### crypto.createHmac(algorithm, key[, options])
+使用给定的算法和 `key` 生成并返回一个 `Hmac` 对象, 该 hmac 对象用于生成 加密的 HMAC hash 摘要
+```js
+const algorithm = 'sha256' // 'sha256', 'sha512' etc
+const secret = 'a secret'
+const hmac = crypto.createHmac(algorithm, secret)
+```
+#### crypto.createSign(algorithm[, options])
+使用给定的算法生成并返回一个 `Sign` 对象
+#### crypto.createVerify(algorithm[, options])
+使用给定的算法生成并返回一个 `Verify` 对象
+#### crypto.getHashes()
+返回一个数组，包含当前支持的所有 hash 算法的名字
+### Class: Cipher
+`Cipher` 类用于给数据加密
+#### cipher.update(data[,inputEncoding][,outputEncoding])
+`data` 是要加密的数据，`inputEncoding` 的值为 `'utf8'`, `'ascii'`, `'latin1'` 之一，如果提供了 `inputEncoding` 参数，`data` 必须为指定编码类型的字符串，否者 `data` 必须是 `'Buffer'`, `'TypedArray'`, `'DataView'` 类型之一。`outputEncoding` 指定加密数据的输出格式，可以是 `'latin1'`, `'base64'`, `'hex'` 之一，如果提供了 `outputEncoding` 参数， 方法返回一个字符串，否则返回一个 `Buffer`。
+
+在 `cipher.final` 方法调用之前，`cipher.update` 可以被调用多次，在`cipher.final` 方法调用之后不能再调用 `cipher.update` 方法，否则会报错。
+#### cipher.final([outputEncoding])
+生成剩余的加密内容（remaining enciphered contents）
+
+`outputEncoding` 指定输出数据的编码类型，可以是 `'latin1'`, `'base64'`, `'hex'` 之一，如果提供了 `outputEncoding` 参数， 方法返回一个字符串，否则返回一个 `Buffer`。
+
+一旦 `cipher.final` 方法被调用之后，`Cipher` 对象不能再用来加密数据，如果试图再次调用 `cipher.final` 方法，将会抛出错误
+
+```js
+const crypto = require('crypto')
+
+const algorithm = 'aes-192-cbc'
+const password = 'marefaker'
+const salt = crypto.randomBytes(16)
+const key = crypto.scryptSync(password, salt, 24)
+const iv = crypto.randomBytes(16)
+
+const cipher = crypto.createCipheriv(algorithm, key, iv)
+
+const data = 'my name is nicholas yang'
+let encrypted = cipher.update(data, 'utf8', 'hex')
+encrypted += cipher.final('hex')
+
+console.log(encrypted) 
+```
+### Class: Decipher
+`Decipher` 类用于给数据解密（与 `Cipher` 类对应）
+#### decipher.update(data[,inputEncoding][,outputEncoding])
+用法与 `cipher.update` 相似
+#### decipher.final([outputEncoding])
+用法与 `cipher.final` 相似
+
+例子：
+```js
+const crypto = require('crypto')
+
+const algorithm = 'aes-192-cbc'
+const password = 'marefaker'
+
+// 生成16字节随机 salt
+const salt = crypto.randomBytes(16)
+// 生成密钥
+const key = crypto.scryptSync(password, salt, 24)
+// 生成16字节随机 iv
+const iv = crypto.randomBytes(16)
+// 生成 cipher 对象
+const cipher = crypto.createCipheriv(algorithm, key, iv)
+
+// 加密
+let data = 'my name is nicholas yang'
+let encrypted = cipher.update(data, 'utf8', 'hex')
+encrypted += cipher.final('hex')
+console.log(encrypted) // 密文
+
+// 解密
+const decipher = crypto.createDecipheriv(algorithm, key, iv)
+let decrypted = decipher.update(encrypted, 'hex', 'utf8')
+decrypted += decipher.final('utf8')
+console.log(decrypted) // 明文
+```
+
+### Class: Hash
+生成数据的 hash 摘要
+#### hash.update(data[, inputEncoding])
+更新指定 `data` 的 hash 值, `inputEncoding` 指定 `data` 的编码方式，如果 `data` 是字符串，`inputEncoding` 默认是 `'utf8'`
+#### hash.digest([encoding])
+计算传递给 `hash.update`方法进行 hash 运算的数据的摘要（digest）, 如果提供 `encoding` 参数，返回一个字符串，否则返回 `Buffer`
+
+例子：
+```js
+const crypto = require('crypto')
+const hash = crypto.createHash('sha256')
+
+const data = 'my name is nicholas yang'
+hash.update(data)
+const digest = hash.digest('hex')
+console.log(digest)
+```
+
+### Class: Hmac
+生成加密 HMAC 摘要
+#### hmac.update(data[, inputEncoding])
+#### hmac.digest([encoding])
+例子：
+```js
+const crypto = require('crypto')
+const hmac = crypto.createHmac('sha256', 'a secret')
+
+const data = 'my name is nicholas yang'
+hmac.update(data)
+const digest = hmac.digest('hex')
+console.log(digest)
+```
+
+### Class: Sign
+用于生成签名
+#### sign.update(data[, inputEncoding])
+#### sign.sign(privateKey[, outputEncoding])
+例子： 
+```js
+const crypto = require('crypto')
+const sign = crypto.createSign('sha256')
+
+const data = 'my name is nicholas yang'
+sign.update(data)
+
+const privateKey = getPrivateKeySomehow()
+const signature = sign.sign(privateKey, 'hex')
+console.log(signature)
+```
+### Class: Verify
+用于验证签名
+#### verify.update(data[, inputEncoding])
+#### verify.verify(object, signature[, signatureEncoding])
+例子：
+```js
+const crypto = require('crypto')
+const data = 'my name is nicholas yang'
+
+// 签名
+const sign = crypto.createSign('sha256')
+sign.update(data)
+const privateKey = getPrivateKeySomehow()
+const signature = sign.sign(privateKey, 'hex')
+console.log(signature)
+
+// 验证
+const verify = crypto.createVerify('sha256')
+verify.update(data)
+const publicKey = getPublicKeySomehow()
+const res = verify.verify(publicKey, signature, 'hex')
+console.log(res) // true or false
+```
