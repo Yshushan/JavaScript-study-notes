@@ -251,13 +251,15 @@ db.collection('inventory').insertMany(
 
   + Evaluation Query Operators:
     + `$regex`:  模式匹配
-
+    + `$jsonSchema`
+    + `$mod`: Select documents where the value of a field divided by a divisor has the specified remainder: `{ field: { $mod: [ divisor, remainder ] } }`
+    + [`$expr`](https://docs.mongodb.com/manual/reference/operator/query/expr/)
   + Array Query Operators:
     + Query an Array for an Element:
       + `{ arrayField: elem }` : 查找 `arrayField` 数组中包含 `elem` 元素的 document
       + `{ arrayField: { $gt: value } }` : 查找 `arrayField` 数组中至少有一个元素的值大于`value` 的 document
       + `{ arrayField: { $gt: value1, $lt: value2 } }` : 查找 `arrayField` 数组中存在某个元素或者多个元素组合满足指定的条件的 document。（不针对某一个元素）
-    + `$all`: 包含指定的元素，不考虑顺序:
+    + `$all`: 包含指定的所有元素，不考虑顺序:
       + `{ arrayFiled: { $all: [ elem1, elem2, ... ] } }`
     + `$elemMatch`: Query for an Array Element that Meets Multiple Criteria:
       + `{ arrayField: { $elemMatch: { $gt: value1, $lt: value2 } } }`
@@ -309,6 +311,8 @@ collection.find({
   ]
 })
 
+// $mod
+collection.find({ field1: { $mod: [3, 1] } }) 
 ```
 `options` 用法
 ```js
