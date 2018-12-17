@@ -363,7 +363,12 @@ const algorithm = 'sha256' // 'sha256', 'sha512' etc
 const secret = 'a secret'
 const hmac = crypto.createHmac(algorithm, secret)
 ```
-#### crypto.createSign()
+#### crypto.createSign(algorithm[, options])
+使用给定的算法生成并返回一个 `Sign` 对象
+#### crypto.createVerify(algorithm[, options])
+使用给定的算法生成并返回一个 `Verify` 对象
+#### crypto.getHashes()
+返回一个当前支持的所有 hash 算法的名字的数组
 ### Class: Cipher
 `Cipher` 类用于给数据加密
 #### cipher.update(data[,inputEncoding][,outputEncoding])
@@ -480,5 +485,25 @@ const signature = sign.sign(privateKey, 'hex')
 console.log(signature)
 ```
 ### Class: Verify
+用于验证签证
 #### verify.update(data[, inputEncoding])
 #### verify.verify(object, signature[, signatureEncoding])
+例子：
+```js
+const crypto = require('crypto')
+const data = 'my name is nicholas yang'
+
+// 签名
+const sign = crypto.createSign('sha256')
+sign.update(data)
+const privateKey = getPrivateKeySomehow()
+const signature = sign.sign(privateKey, 'hex')
+console.log(signature)
+
+// 验证
+const verify = crypto.createVerify('sha256')
+verify.update(data)
+const publicKey = getPublicKeySomehow()
+const res = verify.verify(publicKey, signature, 'hex')
+console.log(res) // true or false
+```
