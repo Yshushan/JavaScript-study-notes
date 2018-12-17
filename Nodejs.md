@@ -368,7 +368,7 @@ const hmac = crypto.createHmac(algorithm, secret)
 #### crypto.createVerify(algorithm[, options])
 使用给定的算法生成并返回一个 `Verify` 对象
 #### crypto.getHashes()
-返回一个当前支持的所有 hash 算法的名字的数组
+返回一个数组，包含当前支持的所有 hash 算法的名字
 ### Class: Cipher
 `Cipher` 类用于给数据加密
 #### cipher.update(data[,inputEncoding][,outputEncoding])
@@ -485,7 +485,7 @@ const signature = sign.sign(privateKey, 'hex')
 console.log(signature)
 ```
 ### Class: Verify
-用于验证签证
+用于验证签名
 #### verify.update(data[, inputEncoding])
 #### verify.verify(object, signature[, signatureEncoding])
 例子：
