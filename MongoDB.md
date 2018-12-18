@@ -467,7 +467,20 @@ students.updateMany(
     + `ok`: `Number`, Is 1 if the command executed correctly.
     + `n`: `Number`, The total count of documents inserted.
 
-
+### Aggregation Pipeline
+#### Stages
++ [`$project`](https://docs.mongodb.com/manual/reference/operator/aggregation/project/)
++ [`$addFields`](https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/)
++ [`$count`](https://docs.mongodb.com/manual/reference/operator/aggregation/count/)
++ [`$match`](https://docs.mongodb.com/manual/reference/operator/aggregation/match/)
++ [`$out`](https://docs.mongodb.com/manual/reference/operator/aggregation/out/)
++ [`$unwind`](https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/)
++ [`$sort`](https://docs.mongodb.com/manual/reference/operator/aggregation/sort/)
++ [`$skip`](https://docs.mongodb.com/manual/reference/operator/aggregation/skip/)
++ [`$limit`](https://docs.mongodb.com/manual/reference/operator/aggregation/limit/)
++ [`$group`](https://docs.mongodb.com/manual/reference/operator/aggregation/group/)
++ [`$sample`](https://docs.mongodb.com/manual/reference/operator/aggregation/sample/)
++ [`$lookup`](https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/)
 
 
 
