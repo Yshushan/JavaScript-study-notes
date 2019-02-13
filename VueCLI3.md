@@ -220,7 +220,7 @@ module.exports={
 为了能够更好的进行缓存控制，构建生成的静态资源的文件名中会带有 hash，因此这个选型的默认值为 `true`，但前提是你必需要让 Vue CLI 去自动生成 `index.html` 文件。如果你不想使用自动生成 `index.html` 的机制，你可以通过设置这个选项为 `false` 来关闭 filename hashing 特性。
 
 ### pages
-此选项是为构建多页应用 (multi-page app) 提供的配置对象，默认值为 `undefined`，即，Vue ClI 默认构建单页应用，关于多页应用的配置请看[这里](https://cli.vuejs.org/config/#pages)。
+此选项是为构建多页应用 (multi-page app) 提供的配置对象，默认值为 `undefined`，即，Vue CLI 默认构建单页应用，关于多页应用的配置请看[这里](https://cli.vuejs.org/config/#pages)。
 
 ### lintOnSave
 开发过程中是否在文件保存时执行代码检查 (lint-on-save)，默认值为 `true`。这个选项只有当项目中安装了 `@vue/cli-plugin-eslint` 才会生效。

@@ -259,7 +259,7 @@ new Vue({
 用于编程式的访问通过作用域插槽 (scoped slot) 分发的内容。详情看[这里](https://vuejs.org/v2/api/#vm-scopedSlots)。
 
 ### vm.$refs
-一个包含通过 `ref` 属性注册过的 DOM 元素 和 组件实例的对象，例如，如果在一个原生 HTML 元素上注册了 `ref='foo'` 属性，那么 `vm.$refs.foo` 就代表了这个 DOM 元素，可以直接对它进行 DOM 操作。如果在一个组件上注册了 `ref='bar'` 属性，那么`vm.$refs.bar` 就代表了这个组件实例，可以直接操作它的数据。详情看[这里](https://vuejs.org/v2/api/#vm-refs)。
+一个包含通过 `ref` 属性注册过的 DOM 元素 和 组件实例的对象，例如，如果在一个原生 HTML 元素上注册了 `ref='foo'` 属性，那么 `vm.$refs.foo` 就代表了这个 DOM 元素，可以直接对它进行 DOM 操作。如果在一个组件上注册了 `ref='bar'` 属性，那么 `vm.$refs.bar` 就代表了这个组件实例，可以直接操作它的数据。详情看[这里](https://vuejs.org/v2/api/#vm-refs)。
 
 ### vm.$isServer
 boolean 值，表示当前 Vue 实例是否运行在服务器端。
@@ -484,6 +484,27 @@ v-bind 支持下列修饰符：
 ```
 更多关于 `v-bind` 的用法，请看[这里](https://vuejs.org/v2/api/#v-bind)。
 
+### 指令的动态参数 (Dynamic Arguments)
+Starting in version 2.6.0, it is also possible to use JavaScript expression in a directive argument by wrapping it with square brackets:
+```html
+<a v-bind:[attributeName]="url">...</a>
+<!-- or -->
+<a :[arrtibuteName]="url">...</a>
+
+<a v-on:[eventName]="doSomething">...</a>
+<!-- or -->
+<a @[eventName]="doSomething">...</a>
+```
+Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. Similariy, when `eventName`'s value is `"focus"`, for example, `v-on:[eventName]` will be equivalent to `v-on:focus`.
+#### Dynamic Argument Value Constraints
+Dynamic arguments are expected to evaluate to a string, with the exception of `null`. The special value `null` can be used to explicitly remove the bindig. Any other non-string value will trigger a warning.
+#### Dynamic Argument Expression Constraints
+Dynamic argument expressions have some syntax constrains because certain characters are invalid inside HTML attribute names, such as spaces and quotes. For example, the following is invalid:
+```html
+<!-- This will trigger a compiler warning -->
+<a v-bind:['foo' + bar]="value">...</a>
+```
+The workaround is to either use expressions without spaces or quotes, or replace the complex expression with a computed property.
 ## 特殊属性
 ### [key](https://vuejs.org/v2/api/#key)
 ### [ref](https://vuejs.org/v2/api/#ref)
