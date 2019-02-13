@@ -106,7 +106,7 @@ directives: {
 ### 钩子函数 (Hook Functions)
 一个指令定义对象可以包含以下钩子函数：
 - `bind`：只在指令第一次绑定到元素时调用一次。你可以在这个函数里进行一些一次性的设置工作。
-- `inserted`：当绑定的元素被插入它的父节点之后调用。注意，只要父节点存在就行，不必要一定插入 DOM 中。
+- `inserted`：当绑定的元素被插入它的父节点之后调用。注意，只要父节点存在就行，不必一定要插入 DOM 中。
 - `update`：called after the containing component’s VNode has updated, **but possibly before its children have updated.** The directive’s value may or may not have changed, but you can skip unnecessary updates by comparing the binding’s current and old values (see below on hook arguments).
 - `componentUpdated`：在包含的组件的 VNode 和它们的子组件的 VNode 都更新之后调用。
 - `unbind`: 当指令从元素解绑时被调用一次。
