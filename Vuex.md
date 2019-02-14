@@ -64,7 +64,7 @@ Vuex stores 被设计成响应式的 (reactive)，当 `store`
 ## Getters
 同组件里的 `computed` 属性一样，可以在 Vuex 里定义 `getters`：
 ```js
-const store = new new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     todos: [
       { id: 1, text: '...', done: true },
@@ -130,7 +130,7 @@ export default {
 > 上面的代码只是作为示例，实际使用时根据实际需要选择一种方法即可。
 
 ## Mutations
-更改 Vuex 中的状态的唯一方式就是 commit mutation。
+更改 Vuex 中的状态的唯一方式是 commit mutation。
 
 Vuex 中的 mutations 的行为与 js 中的事件 (events) 很相似，mutation 的名字相当于事件类型，mutation 的 handler 相当于为事件注册的处理函数：
 ```js
