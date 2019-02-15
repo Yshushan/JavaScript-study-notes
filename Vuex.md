@@ -562,11 +562,11 @@ export default {
     }),
     // 更好的方式是传递 namespace 字符串给 mapState 作为第一个参数
     ...mapState('some/nested/module', [
-      'foo', // this.a => this.$store.state.some.nested.module.foo
-      'bar' // this.b => this.$store.state.some.nested.module.bar
+      'foo', // this.foo => this.$store.state.some.nested.module.foo
+      'bar' // this.bar => this.$store.state.some.nested.module.bar
     ]),
     ...mapState('some/nested/module', {
-      fooAlias: 'foo' // this.aAlias => this.$store.state.some.nested.module.foo
+      fooAlias: 'foo' // this.fooAlias => this.$store.state.some.nested.module.foo
     })
 
     // 导入 Module Getters
