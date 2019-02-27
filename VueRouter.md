@@ -24,9 +24,9 @@ const User = {
 ```
 在一个 path 中你可以有多个 dynamic segment，它们的值会被映射到 `$route.params` 中的对应字段：
 
-|pattern|matched path|$route.params|
-|:----:|:----:|:----:|
-|`/user/:username/post/:post_id`|`/user/nicholas/post/123`|`{username: 'nicholas', post_id: 123}`|
+|             pattern             |       matched path        |             $route.params              |
+| :-----------------------------: | :-----------------------: | :------------------------------------: |
+| `/user/:username/post/:post_id` | `/user/nicholas/post/123` | `{username: 'nicholas', post_id: 123}` |
 
 ### 对路由参数变化的响应（Reacting to Params Changes）
 使用带参数的路由时，有一点需要注意，当用户从 `/user/foo` 导航到 `/user/bar` 时, 因为这两个路由将渲染同一个组件，所以组件实例将会被重用，因为这比销毁旧实例再创建新实例更有效率。同时这也意味着，组件的生命周期钩子（lifecycle hooks）不会被调用。
@@ -219,7 +219,7 @@ const router = new VueRouter({
     // 对带有命名视图的路由对象，你必须为每个命名视图都定义 'props'
     {
       path: '/user/:id',
-      componets: {
+      components: {
         default: User,
         sidebar: Sidebar
       },
@@ -231,7 +231,7 @@ const router = new VueRouter({
   ]
 })
 ```
-当 `props` 被设置为 `true`时，`$route.params` 中的字段将会作为 `prop` 传递给路由组件。
+当 `props` 被设置为 `true` 时，`$route.params` 中的字段将会作为 `prop` 传递给路由组件。
 
 当 `props` 被设置为一个对象，它将被原样的设置为路由组件的 `props`，这对于静态的 `props` 很有用：
 ```js
@@ -252,11 +252,11 @@ const router = new VueRouter({
 ## 编程式导航（Programmatic Navigation）
 vue-router 有两种路由导航方式：声明式导航和编程式导航：
 
-|Declarative|Programmatic|
-|:----:|:----:|
-|`<router-link :to="...">`|`router.push(...)`|
-|`<router-link :to="..." replace>`|`router.replace(...)`|
-|——|`router.go(n)`|
+|            Declarative            |     Programmatic      |
+| :-------------------------------: | :-------------------: |
+|     `<router-link :to="...">`     |  `router.push(...)`   |
+| `<router-link :to="..." replace>` | `router.replace(...)` |
+|               ——                |    `router.go(n)`     |
 
 > 注意：在 Vue 实例内部，通过 `$router` 来访问 router 实例。
 
@@ -299,7 +299,7 @@ router.beforeEach((to, from, next) => {
 每个守卫函数接收三个参数：
 - `to: Route`: 将要导航到的目标路由对象
 - `from: Route`: 当前将要离开的路由对象
-- `next: Function`：必须要调用这个函数与解析这个钩子，这个函数产生的效果取决于提供给它的参数：
+- `next: Function`：必须要调用这个函数来解析这个钩子，这个函数产生的效果取决于提供给它的参数：
 
   - `next()` : 执行 pipeline 中的下一个钩子，如果没有排队的钩子，导航被确认。
   - `next(false)`:终止当前导航。如果浏览器的 url 被改变，它将被设置为 `from` route。

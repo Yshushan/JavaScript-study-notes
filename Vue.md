@@ -484,7 +484,88 @@ v-bind 支持下列修饰符：
 ```
 更多关于 `v-bind` 的用法，请看[这里](https://vuejs.org/v2/api/#v-bind)。
 
-### 指令的动态参数 (Dynamic Arguments)
+### [v-slot](https://vuejs.org/v2/api/#v-slot)
+#### Named Slots
+A `<base-layout>` component with the following template:
+```html
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  <header>
+  <main>
+    <slot></slot>  <!--A slot outlet without name implicitly has the name "default"-->
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+```
+To provide content to named slots, we can use the `v-slot` directive on a `<template>`, providing the name of the slot as `v-slot` 's argument:
+```html
+<base-layout>
+  <template v-slot:header>
+    <h1>title</h1>  <!--These will be passed to "header" slot-->
+  </template>
+
+  <p>paragraph 1</p>  <!--These will be passed to default slot-->
+  <p>paragraph 2</p> 
+
+  <template v-slot:footer>
+    <p>copyright</p>  <!--These will be passed to "footer" slot-->
+  </template>
+</base-layout>
+```
+However, you can still wrap default slot contents in a `<template>` if you wish to be explicit:
+```html
+<template v-slot:default>
+  default slot contents ...
+</template>
+```
+> Note that `v-slot` can only be added to a `<template>` (with one exception).
+
+#### Scoped Slots
+A `<current-user>` component with the following template:
+```html
+<span>
+  <slot v-bind:user="user"> <!--Attributes bound to a <slot> are called "slot props"-->
+    {{ user.lastName }}
+  </slot>
+</span>
+```
+Now, in the parent scope, we can use `v-slot` with a value to define a name for the slot props we've been provided:
+```html
+<current-user>
+  <template v-slot:default="slotProps">
+    {{ slotProps.user.firstName }}  <!--This will replace the fallback content in <current-user>'s template-->
+  </template>
+</current-user>
+```
+In this example, we've chosen to name the object containing all our slot props slotProps, but you can use any name you like.
+
+如果组件模板内部只有**唯一的 default slot**，那么可以不使用 `<template>`，直接将 `v-slot` 指令用于组件标签上：
+```html
+<current-user v-slot:default="slotProps">
+  {{ slotProps.user.firstName }}
+</current-user>
+<!-- or -->
+<current-user v-slot="slotProps">
+  {{ slotProps.user.firstName }}
+</current-user>
+```
+> 注意这种简写语法不能与 named slot 混用，如果模板有多个 slot, 必须为所有的 slot 提供基于 `<template>` 的完整语法。
+
+##### Destructuring Slot Props
+The value of `v-slot` can accept any valid JavaScript expression than can appear in the arugment position of a function definition. So, with the example above, you can use the object destructuring syntax to pull out specific slot props: 
+```html
+<current-user v-slot="{ user }">
+  {{ user.firstName }}
+</current-user>
+<!-- You can even define fallbacks, to be used in case a slot prop is undefined -->
+<current-user v-slot="{ user = { firstName: 'Nicholas' } }">
+  {{ user.firstName }}
+</current-user>
+```
+### 指令的动态参数 (Dynamic Directive Arguments)
 Starting in version 2.6.0, it is also possible to use JavaScript expression in a directive argument by wrapping it with square brackets:
 ```html
 <a v-bind:[attributeName]="url">...</a>
@@ -494,6 +575,14 @@ Starting in version 2.6.0, it is also possible to use JavaScript expression in a
 <a v-on:[eventName]="doSomething">...</a>
 <!-- or -->
 <a @[eventName]="doSomething">...</a>
+
+<my-component>
+  <template v-slot:[slotName]>...</template>
+</my-component>
+<!-- or -->
+<my-component>
+  <template #[slotName]>...</template>
+</my-component>
 ```
 Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. Similarly, when `eventName`'s value is `"focus"`, for example, `v-on:[eventName]` will be equivalent to `v-on:focus`.
 #### Dynamic Argument Value Constraints
