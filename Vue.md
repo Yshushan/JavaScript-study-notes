@@ -489,15 +489,15 @@ Starting in version 2.6.0, it is also possible to use JavaScript expression in a
 ```html
 <a v-bind:[attributeName]="url">...</a>
 <!-- or -->
-<a :[arrtibuteName]="url">...</a>
+<a :[attributeName]="url">...</a>
 
 <a v-on:[eventName]="doSomething">...</a>
 <!-- or -->
 <a @[eventName]="doSomething">...</a>
 ```
-Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. Similariy, when `eventName`'s value is `"focus"`, for example, `v-on:[eventName]` will be equivalent to `v-on:focus`.
+Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. Similarly, when `eventName`'s value is `"focus"`, for example, `v-on:[eventName]` will be equivalent to `v-on:focus`.
 #### Dynamic Argument Value Constraints
-Dynamic arguments are expected to evaluate to a string, with the exception of `null`. The special value `null` can be used to explicitly remove the bindig. Any other non-string value will trigger a warning.
+Dynamic arguments are expected to evaluate to a string, with the exception of `null`. The special value `null` can be used to explicitly remove the binding. Any other non-string value will trigger a warning.
 #### Dynamic Argument Expression Constraints
 Dynamic argument expressions have some syntax constrains because certain characters are invalid inside HTML attribute names, such as spaces and quotes. For example, the following is invalid:
 ```html
