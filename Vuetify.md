@@ -65,3 +65,4 @@ Vue.use(Vuetify, {
 <v-icon>fas fa-{name}</v-icon>
 <v-icon>fab fa-{name}</v-icon>
 ```
+

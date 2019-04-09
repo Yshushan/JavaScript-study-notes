@@ -1,7 +1,8 @@
 .idea/
 .vscode/
 node_modules/
-*.js
+*.[jt]s
+*.[jt]sx
 *.html
 *.css
 *.json
