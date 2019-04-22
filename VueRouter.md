@@ -290,9 +290,9 @@ router.push({ path: '/user', params: { userId }})   //  /user
 你可以使用 `router.beforeEach` 注册全局导航前守卫(global before guards)：
 ```js
 const router = new VueRouter({ ... })
- router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
      // ...
- })
+})
 ```
 无论什么时候有导航被触发，全局导航前守卫都会按照它们被创建的顺序调用，此时导航处于等待状态，直到所有守卫钩子被解析。
 

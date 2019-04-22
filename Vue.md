@@ -106,7 +106,7 @@ directives: {
 ### 钩子函数 (Hook Functions)
 一个指令定义对象可以包含以下钩子函数：
 - `bind`：只在指令第一次绑定到元素时调用一次。你可以在这个函数里进行一些一次性的设置工作。
-- `inserted`：当绑定的元素被插入它的父节点之后调用。注意，只要父节点存在就行，不必要一定插入 DOM 中。
+- `inserted`：当绑定的元素被插入它的父节点之后调用。注意，只要父节点存在就行，不必一定要插入 DOM 中。
 - `update`：called after the containing component’s VNode has updated, **but possibly before its children have updated.** The directive’s value may or may not have changed, but you can skip unnecessary updates by comparing the binding’s current and old values (see below on hook arguments).
 - `componentUpdated`：在包含的组件的 VNode 和它们的子组件的 VNode 都更新之后调用。
 - `unbind`: 当指令从元素解绑时被调用一次。
@@ -584,9 +584,9 @@ Starting in version 2.6.0, it is also possible to use JavaScript expression in a
   <template #[slotName]>...</template>
 </my-component>
 ```
-Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. Similariy, when `eventName`'s value is `"focus"`, for example, `v-on:[eventName]` will be equivalent to `v-on:focus`.
+Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. Similarly, when `eventName`'s value is `"focus"`, for example, `v-on:[eventName]` will be equivalent to `v-on:focus`.
 #### Dynamic Argument Value Constraints
-Dynamic arguments are expected to evaluate to a string, with the exception of `null`. The special value `null` can be used to explicitly remove the bindig. Any other non-string value will trigger a warning.
+Dynamic arguments are expected to evaluate to a string, with the exception of `null`. The special value `null` can be used to explicitly remove the binding. Any other non-string value will trigger a warning.
 #### Dynamic Argument Expression Constraints
 Dynamic argument expressions have some syntax constrains because certain characters are invalid inside HTML attribute names, such as spaces and quotes. For example, the following is invalid:
 ```html

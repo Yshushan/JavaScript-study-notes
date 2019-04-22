@@ -386,14 +386,33 @@ db.collection('inventory').findOne(
 )
 ```
 
-#### collection.findOneAndDelete
-#### collection.findOneAndReplace
-#### collection.findOneAndUpdate
-#### collection.updateOne
+#### collection.findOneAndDelete(filter, options, findAndModifyCallback) => promise
+
+#### collection.findOneAndReplace(filter, replacement, options, findAndModifyCallback) => promise
+Find a document and replace it in one atomic operation. Requires a write lock for the duration of the operation.
+```js
+db.collection('inventory').findOneAndReplace(
+  { price: { $lt: 10 } },
+  { name: 'keyboard', price: 34.6 },
+  { 
+    upsert: true, 
+    returnOriginal: false, // returnOriginal 默认为 true， 返回匹配到的原始 document
+    projection: {name: 1, _id: 0}, // 设置返回哪些字段，同 find 方法
+    sort: { name: 1 } } // 当 filter 匹配多个document时，决定哪个 document 被替换，省略这个选项时，默认替换按自然顺序匹配的第一个 document
+).then(res => {
+  console.log(res.value) // { upsert: true, returnOriginal: false }
+  console.log(res.ok) // Is 1 if the command executed correctly.
+})
+```
+关于第二参数 `replacement`, 不能包含 update operators, 而且不能指定与被更新的 document 不同的 `_id`, 最好是不要指定 `_id` 字段，默认替换匹配到第一个document的除了 `_id` 之外的所有字段。
+#### collection.findOneAndUpdate(filter, update, options, findAndModifyCallback) => promise
+Find a document and update it in one atomic operation. Requires a write lock for the duration of the operation.
+用法与 `findOneAndDelete` 类似，除了第二个参数 `update`, update document 用法与 `updateOne, updateMany` 相同
+#### collection.updateOne(filter, update, options, updateWriteOpCallback) => promise
 `filter` 类似 `find` 方法的 `query` 参数
 
 Update Operators
-+ Field Update Operators
++ [Field Update Operators](https://docs.mongodb.com/manual/reference/operator/update-field/)
   + `$inc`: increments a field by a specified value
   + `$min`: updates the value of the field to a specified value if the specified value is less than the current value of the field
   + `$max`: updates the value of the field to a specified value if the specified value is greater than the current value of the field
@@ -403,7 +422,7 @@ Update Operators
   + `$setOnInsert`: If an update operation with `upsert: true` results in an insert of a document, then `$setOnInsert` assigns the specified values to the fields in the document. If the update operation does not result in an insert, `$setOnInsert` does nothing.
   + `$unset`: deletes a particular field
   + `$currentDate`: sets the value of a field to the current date, either as a Date or a timestamp
-+ [Array Update Operator](https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/)
++ [Array Update Operator](https://docs.mongodb.com/manual/reference/operator/update-array/)
   + `$`: The positional `$` operator identifies an element in an array to update without explicitly specifying the position of the element in the array.
   + `$[]`: The all positional operator `$[]` indicates that the update operator should modify all elements in the specified array field.
   + `$[<identifier>]`: The filtered positional operator `$[<identifier>]` identifies the array elements that match the `arrayFilters` conditions for an update operation. 
@@ -440,10 +459,22 @@ students.updateMany(
   { arrayFilters: [ { 't.type': 'quiz' }, { score: { $gte: 8 } } ] }
 )
 ```
-#### collection.updateMany
-#### collection.deleteOne(filter, update, options, updateWriteOpCallback) => promise
-#### collection.deleteMany
-#### collection.replaceOne
+#### collection.updateMany(filter, update, options, updateWriteOpCallback) => promise
+用法同 `updateOne`, 不同的是更新满足 `filter` 条件的所有 document
+#### collection.deleteOne(filter, options, deleteWriteOpCallback) => promise
+#### collection.deleteMany(filter, options, deleteWriteOpCallback) => promise
+```js
+// 删除 collection 中所有 document
+db.collection('inventory').deleteMany({}, (err, res) => {
+  assert.equal(null, err)
+  console.log(res.deletedCount) // The number of documents deleted
+  console.log(res.result.ok) // Is 1 if the command executed correctly.
+  console.log(res.result.n) // The total count of documents deleted
+})
+```
+
+#### collection.replaceOne(filter, doc, options, callback)
+Replace a document in a collection with another document
 
 #### collection.drop
 #### collection.dropIndex
@@ -456,7 +487,7 @@ students.updateMany(
 ### Type Definition
 #### insertOneWriteOpCallback(err, res)
 + `err`: An error instance representing the error during the execution.
-+ `res`: `insertOneWriteOpResult`, The result object if the command was executed successfully.
++ `res`: `insertOneWriteOpResult`, The result object if the command was executed successfully. 
 
 `insertOneWriteOpResult`:
   + `insertedCount`: `Number`, The total amount of documents inserted.

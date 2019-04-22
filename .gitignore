@@ -2,8 +2,8 @@
 .vscode/
 node_modules/
 progress-flow/
-*.js
-*.ts
+*.[jt]s
+*.[jt]sx
 *.html
 *.css
 *.json
