@@ -1,9 +1,14 @@
 .idea/
 .vscode/
 node_modules/
+progress-flow/
 *.js
 *.ts
 *.html
 *.css
 *.json
 js*.md
+*.svg
+*.jpg
+*.png
+

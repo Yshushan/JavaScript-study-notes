@@ -13,7 +13,7 @@ document.createElement(tagName) //创建元素节点
 document.createTextNode(textValue) //创建文本节点
 element.cloneNode(boolValue)// true: 深复制  false：浅复制
 document.adoptNode(node) //remove and import a node from another document.
-document.importNode(node,boolValue) //import a node from another document withpout removing
+document.importNode(node,boolValue) //import a node from another document without removing
 
 //获取和修改元素节点属性值
 element.getAttribute(attrName)
@@ -98,7 +98,7 @@ const classlists=element.classList;
 
 classlists.length //Return the number of classes in the list. This property is read-only
 
-classlists.add(classname1, classname2, more) //Add one or more class names to an element.
+classlists.add(classname1, ...more) //Add one or more class names to an element.
 // If the specified class already exist, the class will not be added
 
 classlists.contains(classname) //Return a Boolean value, 
@@ -107,7 +107,7 @@ classlists.contains(classname) //Return a Boolean value,
 classlists.item(index) //Return the class name with a specified index number from an element.
 //Index starts at 0. Return null if the index is out of range
 
-classlists.remove(classname1, classname2, more) //Remove one or more class names from an element.
+classlists.remove(classname1, ...more) //Remove one or more class names from an element.
 //NOTE: Removing a class that does not exist, does NOT throw an error
 
 classlists.toggle(classname, boolValue)
