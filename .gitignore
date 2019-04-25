@@ -1,6 +1,7 @@
 .idea/
 .vscode/
 node_modules/
+progress-flow/
 *.[jt]s
 *.[jt]sx
 *.html
@@ -8,3 +9,6 @@ node_modules/
 *.json
 js*.md
 *.txt
+*.svg
+*.jpg
+*.png
