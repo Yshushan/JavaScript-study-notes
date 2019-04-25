@@ -330,7 +330,7 @@ function getCounter(): Counter {
   counter.reset = function () {}
   return counter
 }
-``` 
+```
 
 ## Interfaces Extending Classes
 接口也可以 extends 类，当接口扩展一个类时，它继承这个类的所有成员(包括私有和公有部分)，但不包含成员的实现(implementations)，就好比声明了一个拥有这个类所有成员的接口。
@@ -969,6 +969,7 @@ window.onmousedown = function(mouseEvent){
 TypeScript 能根据赋值运算符左边的类型推断右边的类型，上面根据 `window.onmousedown` 推断出参数 `mouseEvent` 的类型，访问不存在于 `mouseEvent` 中的属性就会报错。
 
 # Type Compatibility
+## Introduction
 TypeScript 中的类型兼容性是基于结构子类型(structural subtyping)的，一种类型与另一种类型兼容只需要它们的各个成员都兼容即可：
 ```ts
  interface Named {
@@ -981,4 +982,173 @@ TypeScript 中的类型兼容性是基于结构子类型(structural subtyping)�
 
  let p: Named = new Person() // ok
 ```
+TypeScript 的结构化类型系统的基本规则是：如果 `y` 具有至少与 `x` 完全相同的成员，则 `x` 与 `y` 兼容。例如：
+```ts
+interface X {
+  name: string
+}
 
+let x: X
+let y = { name: 'Nicholas', age: 27 } // y 的推断类型为：{name: string, age: number}
+x = y // ok, y 包含至少与 x 完全相同的成员
+```
+`y` 是否能赋值给 `x`，编译器会去检查 `x` 的每一个成员是否都能在 `y` 中找到完全兼容的一个成员与之对应。
+
+同样的赋值操作检查也发生在函数调用传参时，接着上面的例子：
+```ts
+function f(x: X) {
+  console.log(x.name)
+}
+
+f(y) // ok
+```
+
+## Functions
+
+### 函数参数的兼容性
+原始类型以及对象类型之间的兼容性是很直观的，但是两个函数的兼容性就有点复杂了。先看一个简单的例子，两个仅参数列表不相同的函数：
+```ts
+let x = (a: number) => 0   // x 的类型被推断为 (a: number) => number
+let y = (b: number, c: string) => 0  // y 的类型被推断为 (b: number, c: string) => number
+
+y = x // ok
+x = y // error
+```
+编译器在检查 `x` 是否能赋值给 `y`时，首先检查函数的参数列表， `x` 的每一个参数都必须在 `y` 中有对应的与之兼容的参数(名称可以不同，但是类型和出现的位置必须相同)，才能通过检查。所以上面允许 `y = x` 允许，不允许 `x = y`。
+
+这看起来好像与对象类型的兼容性检查规则正好相反，但这在
+JavaScript 中是很常见的，函数可以忽略额外的函数参数，通过查看编译生成的 js 代码就容易理解了。
+
+### 返回类型的兼容性
+然后来看针对返回类型的检查，两个仅返回类型不同的两个函数：
+```ts
+let x = () => ({ name: 'Alice' }) // x 的类型被推断为 () => {name: string}
+let y = () => ({ name: 'Nicholas', location: 'China' }) // y 的类型被推断为 () => {name: string, location: string}
+
+x = y // ok
+y = x // error: x 的返回类型缺少 location 属性
+```
+TypeScript 要求 source function 的返回类型必须是 target function 的返回类型的子类型，赋值才被允许。
+
+### Function Parameter Bivariance
+前面说到，函数在赋值时进行参数类型检查，如果把函数的参数列表看作一个对象，那么目标函数的参数列表必须是源函数的参数列表的子类型，赋值才被允许。那么就会出现如下这种很常见且合理的需求，但是无法通过类型检查的情况：
+```ts
+enum EventType { Mouse, KeyBoard }
+
+interface Event { timestamp: number }
+interface MSEvent extends Event { x: number; y: number; }
+interface KBEvent extends Event { keyCode: number }
+
+function listenEvent(eventType: EventType, handler: (n: Event) => void) { }
+
+// 这里 listenEvent 的第二个参数会出现函数赋值的情况，
+// 目标函数的参数列表类型可以看作为 Event，源函数的参数列表类型看作为 MSEvent，
+// 因为目标参数类型不是源参数类型的子类型，所以赋值不被允许。
+// 但是单从函数的调用上来看，这种需求又是合理的，因为 MSEvent 是 Event 的子类。
+listenEvent(EventType.Mouse, (e: MSEvent) => console.log(e.x, e.y))  // error
+
+// 但是可以有如下不太理想的替代方案
+listenEvent(EventType.Mouse, (e: Event) => console.log((<MSEvent>e).x, (<MSEvent>e).y))
+listenEvent(EventType.Mouse, <(e: Event) => void>((e: MSEvent) => console.log(e.x, e.y)))
+
+```
+### Optional Parameters and Rest Parameters
+在比较函数的兼容性时，对 optional parameters 和 rest parameters 会做相同的处理，如果一个函数具有 rest parameter，会被当作为具有无限多个 optional parameter 的函数来处理：
+```ts
+let f1 = (a: string, b?: number) => { }
+let f2 = (c: string, d?: number, e?: string) => { }
+let f3 = (g: string, h?: string) => { }
+
+f1 = f2 // ok 源参数列表中存在额外的可选参数，可以通过检查
+f2 = f1 // ok 目标参数列表中存在额外的可选参数，可以通过检查
+f1 = f3 // error 不属于上述两种情况
+```
+更多细节请看[官方文档](http://www.typescriptlang.org/docs/handbook/type-compatibility.html)。
+### Functions with Overloads
+When a function has overloads, each overload in the source type must be matched by a compatible signature on the target type. This ensures that the target function can be called in all the same situations as the source function.
+
+## Enums
+枚举类型与数值类型(number)是兼容的：
+```ts
+enum Color { red, green, blue }
+let a: number
+let b: Color
+a = Color.red // ok
+b = 5 // ok
+```
+但是来自不同枚举类型的枚举值之间是不兼容的：
+```ts
+enum Color { red, green, blue }
+enum Status {ready, waiting}
+
+let c = Color.red 
+c = Status.ready // error
+```
+
+## Classes
+类的兼容性规则与对象字面量和接口的规则相似，但是有个例外，当对两个类进行比较时，仅实例成员被比较，静态成员和构造函数不影响类的兼容性：
+```ts
+class Animal {
+  name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+
+class People {
+  name: string
+  static remark = "I'm a person"
+  constructor(fn: string, ln: string) {
+    this.name = fn + ' ' + ln
+  }
+}
+
+let a = new Animal('Jack')
+let p = new People('Nicholas', 'Yang')
+
+// 静态成员和构造函数不影响兼容性，在没有私有和保护成员的情况下，只要各共有成员都兼容，任何两个类都是兼容的
+a = p // ok
+p = a // ok
+```
+但是类的私有成员和保护成员会影响两个类的兼容型，当两个类具有私有或保护成员时，它们的实例兼容的必要条件是它们的私有或保护成员同源，即来自于同一个类的声明，否者即使二者具有完全相同的 shape，也不兼容：
+```ts
+class Animal {
+  name: string
+  private age: number
+  constructor(name: string, age: number) {
+    this.name = name
+    this.age = age
+  }
+}
+
+class People {
+  name: string
+  private age: number
+  constructor(name: string, age: number) {
+    this.name = name
+    this.age = age
+  }
+}
+
+let a = new Animal('Jack',3)
+let p = new People('Nicholas', 18)
+
+// 虽然两个类有完全相同的shape，但是它们的私有成员来自不同的类声明，所以不兼容
+a = p // error
+p = a // error
+```
+## Generics
+由于 TypeScript 是结构类型系统，因此泛型类型的类型参数仅在作为成员类型的一部分使用时才会影响结果类型：
+```ts
+interface Empty<T> { }
+let x: Empty<number>
+let y: Empty<string>
+x = y // ok, 类型参数没有在成员中使用，不影响结果类型的兼容性
+
+interface notEmpty<T> {
+  data: T
+}
+let a: notEmpty<number>
+let b: notEmpty<string>
+a = b // error, 类型参数是成员类型的一部分
+```
