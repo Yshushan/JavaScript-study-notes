@@ -507,3 +507,24 @@ const publicKey = getPublicKeySomehow()
 const res = verify.verify(publicKey, signature, 'hex')
 console.log(res) // true or false
 ```
+
+
+
+
+
+## Command Line Arguments (命令行参数)
+在 node 脚本文件中可以通过 `process.argv` 来获取命令行参数, `process.argv` 是一个数组：
+```js
+// yss.js
+process.argv.forEach((arg, index) => {
+  console.log(`${index}: ${arg}`)
+})
+```
+执行该脚本：`node yss.js a 1`， 结果为：
+```
+0: path/to/node.exe
+1: path/to/yss.js
+2: a
+3: 1
+```
+即从 `process.argv` 的第 3 个元素开始才是传入的参数，前两个依次是 node 程序的位置和脚本文件的位置。

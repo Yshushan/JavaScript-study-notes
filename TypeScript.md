@@ -1110,7 +1110,7 @@ let p = new People('Nicholas', 'Yang')
 a = p // ok
 p = a // ok
 ```
-但是类的私有成员和保护成员会影响两个类的兼容型，当两个类具有私有或保护成员时，它们的实例兼容的必要条件是它们的私有或保护成员同源，即来自于同一个类的声明，否者即使二者具有完全相同的 shape，也不兼容：
+但是类的私有成员和保护成员会影响两个类的兼容型，当两个类具有私有或保护成员时，它们的实例兼容的必要条件是它们的私有和保护成员同源，即来自于同一个类的声明，否者即使二者具有完全相同的 shape，也不兼容：
 ```ts
 class Animal {
   name: string
@@ -1152,3 +1152,131 @@ let a: notEmpty<number>
 let b: notEmpty<string>
 a = b // error, 类型参数是成员类型的一部分
 ```
+
+# [Advanced Types](http://www.typescriptlang.org/docs/handbook/advanced-types.html)
+## Intersection Types (交叉类型)
+交叉类型就是把多个不同的类型组合成一个类型，让它拥有这些类型的所有特性，例如 `Person & Serializable & Loggable` 是 `Person`， `Serializable`，`Loggable` 这三种类型的交叉类型，这个交叉类型的实例将拥有这三个类型的所有成员。
+## Union Types (联合类型)
+联合类型和交叉类型很相似，但是使用方式截然不同。在 JavaScript 中我们经常有这样的需求，一个函数某个参数可以是多种不同的类型，例如下面的例子：
+```ts
+/**
+ * Takes a string and adds "padding" to the left.
+ * If 'padding' is a string, then 'padding' is appended to the left side.
+ * If 'padding' is a number, then that number of spaces is added to the left side.
+ */
+function padLeft(value: string, padding: any) {
+    if (typeof padding === "number") {
+        return Array(padding + 1).join(" ") + value;
+    }
+    if (typeof padding === "string") {
+        return padding + value;
+    }
+    throw new Error(`Expected string or number, got '${padding}'.`);
+}
+
+padLeft("Hello world", 4); // "    Hello world"
+padLeft("Hello world", 'Nicholas, ') // "Nicholas, Hello world"
+padLeft("Hello world", {}) // passes at compile time, fails at runtime.
+```
+在提到联合类型之前只能像这样实现，这也是 JavaScript 中的实现方式，但是有一个问题是参数 `padding` 的类型是 `any`，意味着这个 `padding` 参数可以接受任何类型的值，而不仅仅是 `string` 和 `number` 类型，这与 TypeScript 类型控制的灵魂背道而驰，解决办法就是使用联合类型：
+```ts
+function padLeft(value: string, padding: string | number) {
+    if (typeof padding === "number") {
+        return Array(padding + 1).join(" ") + value;
+    }
+    if (typeof padding === "string") {
+        return padding + value;
+    }
+}
+padLeft("Hello world", 4) // ok
+padLeft("Hello world", 'Nicholas, ') // ok
+padLeft("Hello world", true) // error, fails at compile time
+```
+联合类型的意思是这个类型的实例可以是多种类型之一，每个类型用符号 `|` 分隔，例如 `string | number| boolean` 是 `string`，`number` 和 `boolean` 的一个联合类型。
+
+如果一个变量是联合类型，我们只能通过这个变量访问这个联合的所有类型的公共部分：
+```ts
+interface Fish {
+  swim(): void
+  layEggs(): void
+}
+
+interface Bird {
+  fly(): void
+  layEggs(): void
+}
+
+function getSmallPet(): Fish | Bird {
+  return { swim() {}, layEggs() {} }
+}
+
+let pet = getSmallPet()
+pet.layEggs()
+pet.swim() // error
+pet.fly() // error
+```
+## Type Guards and Differentiating Types 
+如上面例子看到的那样，`getSmallPet` 虽然返回一个 `Fish` 和 `Bird` 的联合类型，但是我们只能访问这两个类型共有的部分，即使在运行时阶段(runtime)可以确定返回类型为 `Fish`，但是 `pet.swim()` 依然无法通过编译检查。这使得联合类型在某些时候显得有点 tricky，不过也有应对办法，最简单直观的就是使用类型推断(type assertion):
+```ts
+let pet = getSmallPet()
+
+if ((<Fish>pet).swim) {
+  (<Fish>pet).swim()
+} else {
+  (<Bird>pet).fly()
+}
+```
+上面的方法虽然可行，但是不够简洁，我们需要进行多次类型推断，一个更好的解决方案是使用类型守卫(type guards).
+### User-Defined Type Guards
+一个 type guard 是一个表达式，这个表达式用来执行运行时类型检查。要定义一个 type guard，只需要定义一个返回类型为类型谓词(type predicate)的函数即可：
+```ts
+function isFish(pet: Fish|Bird): pet is Fish{
+  return (<Fish>pet).swim !== undefined
+}
+```
+这里的 `pet is Fish` 就是类型谓词(type predicate)，类型谓词遵从 `parameterName is Type` 这样的形式，其中 `parameterName` 必须是来自当前函数参数列表的参数名。任何时候，只要 `isFish` 在某个兼容的变量上调用，TypeScript 就会就缩窄这个变量的类型到具体的类型：
+```ts
+let pet = getSmallPet()
+
+if (isFish(pet)) {
+  pet.swim()
+} else {
+  pet.fly()
+}
+```
+可以看到，通过 type guard 之后，TypeScript 不仅知道在 `if` 分支，`pet` 的类型是 `Fish`，而且也知道在 `else` 分支，`pet` 的类型是 `Bird`。
+
+### <span style="color:red">typeof</span> type guards
+我们回到前面 `padLeft` 函数的例子，可以定义两个 user-defined type guard 来将其改写为：
+```ts
+function isNumber(x: any): x is Number {
+  return typeof x === 'number'
+}
+
+function isString(x: any): x is String {
+  return typeof x === 'string'
+}
+
+function padLeft(value: string, padding: string | number) {
+  if (isNumber(padding)) {
+    return Array(padding + 1).join(" ") + value;
+  } 
+  if (isString(padding)) {
+    return padding + value;
+  }
+  throw new Error(`Expected string or number, got '${padding}'.`);
+}
+```
+然而必须定义一个函数来确定一个类型是否为原始类型(primitive)是很痛苦的，幸运的是，TypeScript 可以将 `typeof x === 'number'` 这样的语句直接视为 <span style="color:red">typeof</span> type guard，而不必将 `typeof x === 'number'` 封装到 user-defined type guard 中。这意味着下面的代码就已经包含了 type guard：
+```ts
+function padLeft(value: string, padding: string | number) {
+    if (typeof padding === "number") { // typeof type guard
+        return Array(padding + 1).join(" ") + value;
+    }
+    if (typeof padding === "string") { // typeof type guard
+        return padding + value;
+    }
+    throw new Error(`Expected string or number, got '${padding}'.`);
+}
+```
+<span style="color:red">typeof</span> type guard 有两种形式，`typeof v === typename` 和 `typeof v !== typename`，其中 `typename` 必须为 `'number'`，`'string'`，`'boolean'`，`'symbol'` 四者之一，若为其它值，TypeScript 则不会将这个表达式视为 type guard。
