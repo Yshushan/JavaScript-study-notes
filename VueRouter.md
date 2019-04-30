@@ -186,7 +186,7 @@ const router = new VueRouter({
 更多高级用法请参考[这里](https://router.vuejs.org/guide/essentials/redirect-and-alias.html#redirect)
 
 ### Alias
-`/a` 重定向到 `/b` 的意思是：当你访问 `/a`时，URL 会被替换成 `/b`，然后匹配 `/b` 对应的路由。而 `/a` 的别名是 `/b`，意味着，当你访问 `/b` 时，URL 还是 `/b`，但是将会匹配 `/a` 对应的路由，也就是说访问 `/b` 和访问 `/a` 是一样的效果：
+`/a` 重定向到 `/b` 的意思是：当你访问 `/a` 时，URL 会被替换成 `/b`，然后匹配 `/b` 对应的路由。而 `/a` 的别名是 `/b`，意味着，当你访问 `/b` 时，URL 还是 `/b`，但是将会匹配 `/a` 对应的路由，也就是说访问 `/b` 和访问 `/a` 是一样的效果：
 ```js
 const router = new VueRouter({
   routes: [
@@ -481,7 +481,7 @@ scrollBehavior (to, from, savedPosition) {
   }
 }
 ```
-如果结合路由元信息，还可以实现更细粒度的滚动控制。详细请看[这里](https://router.vuejs.org/zh/guide/advanced/scroll-behavior.html#%E5%BC%82%E6%AD%A5%E6%BB%9A%E5%8A%A8)。
+如果结合路由元信息，还可以实现更细粒度的滚动控制。详细请看[这里](https://router.vuejs.org/guide/advanced/scroll-behavior.html#scroll-behavior)。
 
 如果 `scrollBehavior` 返回的是一个 falsy 值，或者是一个空对象，将不会发生滚动行为。
 
