@@ -34,7 +34,7 @@ let myAdd = function(x: number, y: number): number { return x + y }
 let myAdd: (a: number, b: number) => number = function(x, y) { return x + y }
 ```
 ## Optional and Default Parameters (可选和默认参数)
-TypeScript 中， 默认情况下，函数定义时的参数列表中的每一个参数都是必须的，在函数调用时都不能省略，否则编译出错。但是也可以通过在参数名后面添加 `?` 符号来将该参数指定可选，注意可选参数的右边不能有必须参数：
+TypeScript 中， 默认情况下，函数定义时的参数列表中的每一个参数都是必须的，在函数调用时都不能省略，否则编译出错。但是也可以通过在参数名后面添加 `?` 符号来将其指定为可选参数，注意可选参数的右边不能有必须参数：
 ```ts
 // 如果不提供 lastName, lastName 将为 undefined
 function makeName(firstName: string, lastName?: string){
@@ -43,6 +43,8 @@ function makeName(firstName: string, lastName?: string){
   else
     return firstName
 }
+
+makeName('Nicholas') // ok
 ```
 也可以在函数定义时给参数设置默认值，如果默认初始化参数在参数列表的末尾，则同可选参数一样，可以在调用时省略:
 ```ts
@@ -71,7 +73,7 @@ let nameStr = getNameStr('Monica', 'Rose', 'Joey', 'Rachael')
 关于 `this` 在 TypeScript 中的用法, 以及如何让编译器捕获由于不正确使用 `this` 引发的错误，请移步[官方文档](http://www.typescriptlang.org/docs/handbook/functions.html)。
 ## Overloads (重载)
 所谓 overload 就是一个函数在调用时，根据传递的参数的 shape (数量以及类型) 不同，函数表现出不同的行为。
-那么 TypeScript 如何对这样一类函数进行类型检查呢？答案就是，为这样的函数提供多个 function type 来作为它的一个重载列表，在该函数被调用时，编译器会这个重载列表去进行类型检查：
+那么 TypeScript 如何对这样一类函数进行类型检查呢？答案就是，为这样的函数提供多个 function type 来作为它的一个重载列表，在该函数被调用时，编译器会使用这个重载列表去进行类型检查：
 ```ts
 const colors = ['red', 'blue', 'green']
 
@@ -90,15 +92,15 @@ pickColor('green')  // 2
 注意上面例子中的 `function pickColor(x: any)` 片段不是重载列表的一部分， `pickColor` 函数只有两个重载，一个接受一个 `number` 参数，另一个接受一个 `string` 参数， 使用任何其它参数类型调用该函数将导致错误。
 
 # [Interfaces](http://www.typescriptlang.org/docs/handbook/interfaces.html)
-基于**值的形状**(the shape of values) 的类型检查(type-checking) 是 TypeScript 的一个核心概念，而 interface 用来为这些类型(形状)名命，可以把 interface 当作是一个条款或协议(contract), 用来规范和约束你项目内部的代码，或者为外部代码以及第三方库提供对接的规范。
+基于**值的形状**(the shape of values) 的类型检查(type-checking) 是 TypeScript 的一个核心概念，而 interface 用来为这些类型(形状)名命，可以把 interface 当作是一个条款或协议(contract), 用来规范和约束项目内部的代码，或者为外部代码以及第三方库提供对接的规范。
 ```ts
-function printLabel(labeledObj: {label: string}){
+function printLabel(labeledObj: { label: string }) {
   console.log(labeledObj.label)
 }
 
 printLabel({label: 'hello world'})
 ```
-上面的函数 `printLabel` 接受一个 shape (type) 为 `{label: string}` 的参数，我们可以使用 interface 来定义这样一个 shape，上面的例子可以改写如下：
+上面的函数 `printLabel` 接受一个 shape (type) 为 `{ label: string }` 的参数，我们可以使用 interface 来定义这样一个 shape，上面的例子可以改写如下：
 ```ts
 interface labeledValue {
   label: string
@@ -110,7 +112,7 @@ function printLabel(labeledObj: labeledValue) {
 
 printLabel({ label: 'Shameless' })  // 'Shameless'
 let myObj = { label: 'The Walking Dead', season: 10 } 
-printLabel(myObj)  // work 'The Walking Dead'
+printLabel(myObj)  // ok, 'The Walking Dead'
 printLabel({ label: 'Game of Thrones', season: 8 })  // error
 ```
 这里定义了一个接口 `labeledValue` 来描述 `printLabel` 的参数的 shape，但是在函数调用的时候，我们传递给 `printLabel` 的参数不必显式的实现 `labeledValue` 接口，只要传递的参数的 shape 符合要求即可，而且编译器在执行类型检查时不关心传递进来的参数中属性的位置顺序，只要匹配定义接口中的各个属性的类型即可。
@@ -118,7 +120,7 @@ printLabel({ label: 'Game of Thrones', season: 8 })  // error
 同时，从上面的例子中可以看出，如果调用函数时以变量的形式传递参数(如 `myObj`)，参数中可以有额外的属性(如`season: 10`), 通俗的说就是，传递的变量的 shape 可以是函数期望参数的 shape 的超集。但是如果在调用函数时直接传递对象字面量，那么传递的参数的 shape 必须与函数期望参数的 shape 完全一致(属性的顺序除外)，否则会报错。
 
 ## Optional Properties
-默认情况下，接口中定义的属性都是必须的(required)，例如上面例子中 `printLabel` 函数的参数 `labeledObj` 的属性 `label` 就是必须的，在调用时必须提供。但是也可以像定义函数时指定可选参数一样，也可以在属性名后面紧跟一个符号 `?` 来为接口定义可选属性：
+默认情况下，接口中定义的属性都是必须的(required)，例如上面例子中 `printLabel` 函数的参数 `labeledObj` 的属性 `label` 就是必须的，在调用时必须提供。但是像定义函数时指定可选参数一样，也可以在属性名后面紧跟一个符号 `?` 来为接口定义可选属性：
 ```ts
 interface squareConfig {
   color?: string
@@ -571,7 +573,7 @@ class myClass {
   private prop2: any
   protected prop3: any
   readonly prop4: any
-  // 属性被立即简单初始化
+  // 属性只是简单的在构造函数中初始化
   constructor(p1: any, p2: any, p3: any, p4: any) {
     this.prop1 = p1
     this.prop2 = p2
@@ -604,7 +606,7 @@ class Employee {
   }
 
   set fullName(newName: string) {
-    if (passcode && passcode == "secret passcode") {
+    if (passcode && passcode === "secret passcode") {
       this._fullName = newName
     }
     else {
@@ -918,7 +920,7 @@ console.log(E[E.Bar]) // 'Bar'
 字符串型枚举不能逆向映射。
 
 ## <i style="color:red">const</i> enums
-常量枚举的成员只能使用常量枚举表达式进行初始化，与常规枚举不同，常量枚举在编译期间被完全移除，不会生成对应的 js 代码，而常量枚举成员在被引用点会被直接替换成对应的值，因此，常量枚举不能有计算成员。常量枚举使用关键字 `const` 来定义：
+常量枚举的成员只能使用常量枚举表达式进行初始化，与普通枚举不同，常量枚举在编译期间被完全移除，不会生成对应的 js 代码，常量枚举成员在被引用点会被直接替换成对应的值，因此，常量枚举不能有计算成员。常量枚举使用关键字 `const` 来定义：
 ```ts
 const enum Directions {
     Up,
@@ -1014,7 +1016,7 @@ let y = (b: number, c: string) => 0  // y 的类型被推断为 (b: number, c: s
 y = x // ok
 x = y // error
 ```
-编译器在检查 `x` 是否能赋值给 `y`时，首先检查函数的参数列表， `x` 的每一个参数都必须在 `y` 中有对应的与之兼容的参数(名称可以不同，但是类型和出现的位置必须相同)，才能通过检查。所以上面允许 `y = x` 允许，不允许 `x = y`。
+编译器在检查 `x` 是否能赋值给 `y` 时，首先检查函数的参数列表， `x` 的每一个参数都必须在 `y` 中有对应的与之兼容的参数(名称可以不同，但是类型和出现的位置必须相同)，才能通过检查。所以上面允许 `y = x` ，不允许 `x = y`。
 
 这看起来好像与对象类型的兼容性检查规则正好相反，但这在
 JavaScript 中是很常见的，函数可以忽略额外的函数参数，通过查看编译生成的 js 代码就容易理解了。
@@ -1178,7 +1180,7 @@ padLeft("Hello world", 4); // "    Hello world"
 padLeft("Hello world", 'Nicholas, ') // "Nicholas, Hello world"
 padLeft("Hello world", {}) // passes at compile time, fails at runtime.
 ```
-在提到联合类型之前只能像这样实现，这也是 JavaScript 中的实现方式，但是有一个问题是参数 `padding` 的类型是 `any`，意味着这个 `padding` 参数可以接受任何类型的值，而不仅仅是 `string` 和 `number` 类型，这与 TypeScript 类型控制的灵魂背道而驰，解决办法就是使用联合类型：
+在提到联合类型之前只能像这样实现，这也是 JavaScript 中的解决方式，但是有一个问题是参数 `padding` 的类型是 `any`，意味着这个 `padding` 参数可以接受任何类型的值，而不仅仅是 `string` 和 `number`，这与 TypeScript 类型控制的灵魂背道而驰，解决办法就是使用联合类型：
 ```ts
 function padLeft(value: string, padding: string | number) {
     if (typeof padding === "number") {
@@ -1194,7 +1196,7 @@ padLeft("Hello world", true) // error, fails at compile time
 ```
 联合类型的意思是这个类型的实例可以是多种类型之一，每个类型用符号 `|` 分隔，例如 `string | number| boolean` 是 `string`，`number` 和 `boolean` 的一个联合类型。
 
-如果一个变量是联合类型，我们只能通过这个变量访问这个联合的所有类型的公共部分：
+如果一个变量是联合类型，我们只能通过这个变量访问这个联合的所有类型的共有部分：
 ```ts
 interface Fish {
   swim(): void
@@ -1216,7 +1218,7 @@ pet.swim() // error
 pet.fly() // error
 ```
 ## Type Guards and Differentiating Types 
-如上面例子看到的那样，`getSmallPet` 虽然返回一个 `Fish` 和 `Bird` 的联合类型，但是我们只能访问这两个类型共有的部分，即使在运行时阶段(runtime)可以确定返回类型为 `Fish`，但是 `pet.swim()` 依然无法通过编译检查。这使得联合类型在某些时候显得有点 tricky，不过也有应对办法，最简单直观的就是使用类型推断(type assertion):
+如上面例子看到的那样，`getSmallPet` 虽然返回一个 `Fish` 和 `Bird` 的联合类型，但是我们只能访问这两个类型共有的成员 `layEggs`，即使在运行时阶段(runtime)可以确定返回类型为 `Fish`，但是 `pet.swim()` 依然无法通过编译检查。这使得联合类型在某些时候显得有点 tricky，不过也有应对办法，最简单直观的就是使用类型断言(type assertion):
 ```ts
 let pet = getSmallPet()
 
@@ -1226,15 +1228,15 @@ if ((<Fish>pet).swim) {
   (<Bird>pet).fly()
 }
 ```
-上面的方法虽然可行，但是不够简洁，我们需要进行多次类型推断，一个更好的解决方案是使用类型守卫(type guards).
+上面的方法虽然可行，但是不够简洁，我们需要进行多次类型断言，一个更好的解决方案是使用类型守卫(type guards).
 ### User-Defined Type Guards
 一个 type guard 是一个表达式，这个表达式用来执行运行时类型检查。要定义一个 type guard，只需要定义一个返回类型为类型谓词(type predicate)的函数即可：
 ```ts
-function isFish(pet: Fish|Bird): pet is Fish{
+function isFish(pet: Fish|Bird): pet is Fish {
   return (<Fish>pet).swim !== undefined
 }
 ```
-这里的 `pet is Fish` 就是类型谓词(type predicate)，类型谓词遵从 `parameterName is Type` 这样的形式，其中 `parameterName` 必须是来自当前函数参数列表的参数名。任何时候，只要 `isFish` 在某个兼容的变量上调用，TypeScript 就会就缩窄这个变量的类型到具体的类型：
+这里的 `pet is Fish` 就是类型谓词(type predicate)，类型谓词遵循 `parameterName is Type` 这样的形式，其中 `parameterName` 必须是来自当前函数参数列表的参数名。任何时候，只要 `isFish` 在某个兼容的变量上调用，TypeScript 就会将这个变量的类型缩窄到具体的类型：
 ```ts
 let pet = getSmallPet()
 

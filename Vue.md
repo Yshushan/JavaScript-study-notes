@@ -108,6 +108,7 @@ directives: {
 - `bind`：只在指令第一次绑定到元素时调用一次。你可以在这个函数里进行一些一次性的设置工作。
 - `inserted`：当绑定的元素被插入它的父节点之后调用。注意，只要父节点存在就行，不必一定要插入 DOM 中。
 - `update`：called after the containing component’s VNode has updated, **but possibly before its children have updated.** The directive’s value may or may not have changed, but you can skip unnecessary updates by comparing the binding’s current and old values (see below on hook arguments).
+    在当前绑定的组件的 VNode 更新之后调用，但是有可能在它的子组件更新之前调用，调用时，指令绑定的值可能改变也可能没改变，可以通过比较当前绑定的值 `value` 与之前传递给指令的值 `oldValue` 来跳过不必要的更新。
 - `componentUpdated`：在包含的组件的 VNode 和它们的子组件的 VNode 都更新之后调用。
 - `unbind`: 当指令从元素解绑时被调用一次。
 ### 指令钩子函数的参数
@@ -120,7 +121,7 @@ directives: {
   - `oldValue`：之前传给指令的值，仅在 `update` 和 `componentUpdated` 钩子函数中可用，无论传给指令的值是否变化，这个字段都可用。
   - `expression`: 绑定的表达式的字符串形式，例如：`v-my-directive="1+1"`， `expression` 将是 `"1+1"`。
   - `arg`：传递给指令的参数，如果有的话。例如：`v-my-directive:foo`，`arg` 将是 `"foo"`。
-  - `modifiers`：一个包含修饰符的对象，如果有的话。例如：`v-my-directive.bar.baz`， `modifiers` 将是 `{foo: true, bar: true}`。
+  - `modifiers`：一个包含修饰符的对象，如果有的话。例如：`v-my-directive.bar.baz`， `modifiers` 将是 `{bar: true, baz: true}`。
 - `vnode`：由 Vue 的编译器生成的虚拟节点(virtual node)，详细看 [VNode API](https://vuejs.org/v2/api/#VNode-Interface)。
 - `oldVNode`：更新前的 virtual node，仅在 `update` 和 `componentUpdated` 钩子函数中可用。
 
@@ -456,7 +457,6 @@ export default {
   }
 </script>
 ```
-如果监听的是组件自定义事件，它代表组件内部 `$emit` 传过来的参数：
 `v-on` 还可以绑定一个包含 eventName/handler 键值对的对象：
 ```html
 <button v-on="{mousedown: handler1, mouseup: handler2}"></button>
@@ -465,12 +465,12 @@ export default {
 <button @mousedown="handler1" @mouseup="handler2"></button>
 ```
 ### [v-bind](https://vuejs.org/v2/api/#v-bind)
-动态绑定表达式的值到 attribute 或者组件的prop，当绑定的属性是`class`和`style`时，它们支持数组和对象绑定。
+动态绑定表达式的值到 attribute 或者组件的prop，当绑定的属性是 `class` 和 `style` 时，它们支持数组和对象绑定。
 
 v-bind 支持下列修饰符：
 + `.prop`：绑定的是 DOM property，而不是 HTML attribute ([看这里](https://stackoverflow.com/questions/6003819/what-is-the-difference-between-properties-and-attributes-in-html#answer-6004028))。如果是在组件上使用带有 `prop` 修饰符的 `v-on`，被绑定的属性将被设置到组件的`$el`上。
 + `.camel`：将 kebab-case 类型的 attribute name 转换为 camel-case 类型。
-+ `.sync`：监听**更新绑定的值的自定义事件**的语法糖：
++ `.sync`：监听**更新绑定的值**的自定义事件的语法糖：
   ```
   <myComponent v-bind:propA.sync="someValue"/>
   <!-- 等价于 -->
