@@ -675,7 +675,7 @@ interface Point3d extends Point {
 
 let point3d: Point3d = { x: 1, y: 2, z: 3 }
 ```
-# Generics (泛型)
+# Generics
 简单的例子：
 ```ts
 function identity<T>(arg: T): T {
@@ -768,7 +768,7 @@ getProperty({a:1,b:2}, 'b')
 getProperty({a:1,b:2}, 'c')  // error
 ```
 
-# Enums (枚举)
+# Enums
 枚举让我们可以定义一组名命的常量，TypeScript 支持数值和字符串枚举。
 ## Numeric enums
 ```ts
@@ -859,7 +859,7 @@ enum myEnum {
   F = '123'.length
 }
 ```
-## Union enums and enum member types
+## <span id="des">Union enums and enum member types</span>
 There is a special subset of constant enum member that aren't calculated: literal enum members. A literal enum member is a constant enum member with no initialized value, or with values that are initialized to 
 - any string literal (e.g. `'foo', 'bar', 'baz'`)
 - any numeric literal (e.g. `1, 100`)
@@ -935,7 +935,7 @@ var directions = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
 ```
 ## Ambient enums
 
-# Type Inference (类型推断)
+# Type Inference
 ## Basic
 在某些地方(变量初始化、对象成员初始化、函数默认参数初始化、函数返回值)如果没有显式提供类型声明，TypeScript 会进行类型推断给出类型信息：
 ```ts
@@ -1280,3 +1280,416 @@ function padLeft(value: string, padding: string | number) {
 }
 ```
 <span style="color:red">typeof</span> type guard 有两种形式，`typeof v === typename` 和 `typeof v !== typename`，其中 `typename` 必须为 `'number'`，`'string'`，`'boolean'`，`'symbol'` 四者之一，若为其它值，TypeScript 则不会将这个表达式视为 type guard。
+### <span style="color:red">instanceof</span> type guards
+对于非原始类型，即类的实例，使用 `instanceof` 进行 type guard，`instanceof` 左边是实例对象，右边是类的构造函数：
+```ts
+interface Padder {
+  getPaddingString(): string
+}
+
+class SpaceRepeatingPadder implements Padder {
+  constructor(private numSpaces: number) { }
+  getPaddingString() {
+      return Array(this.numSpaces + 1).join(" ");
+  }
+  getNumberOfSpace() {
+    return this.numSpaces
+  }
+}
+
+class StringPadder implements Padder {
+  constructor(private value: string) { }
+  getPaddingString() {
+      return this.value;
+  }
+}
+
+function getRandomPadder() {
+  return Math.random() < 0.5 ?
+      new SpaceRepeatingPadder(4) :
+      new StringPadder("  ");
+}
+
+let padder = getRandomPadder()
+
+if (padder instanceof StringPadder) {
+  // padder 缩窄为 StringPadder 类型
+  padder.getPaddingString()
+} else {
+  // padder 缩窄为 SpaceRepeatingPadder 类型
+  padder.getPaddingString() // ok
+  padder.getNumberOfSpace() // ok
+}
+```
+## Nullable Types
+TypeScript 有两个特殊类型：`null` 和 `undefined`，默认情况下，`null` 和 `undefined` 可以赋值给任何类型的变量。也就是说在默认情况下，当你声明某个类型的变量时，实际上变量的类型是当前声明类型与 `null` 和 `undefined` 的联合类型。这可能不是我们想要的效果，要解决这个问题，可以在配置文件 `tsconfig.json` 中将 `compilerOptions.strictNullChecks` 选项设置为 `true`：
+```json
+{
+  "compilerOptions": {
+    // ...
+    "strictNullChecks": true
+  }
+}
+```
+这样设置之后，声明变量时就不会自动包含 `null` 和 `undefined` 类型，除非你显式的声明为联合类型。
+
+当开启了严格空检查之后，可选参数/属性(optional parameters / properties)的类型会自动加上 `| undefined`：
+```ts
+// optional parameters
+function f(x: number, y?:number) { // y 的类型为 number | undefined
+  return x + (y || 0)
+}
+
+f(2) // ok
+f(2, undefined) // ok
+f(2, null) // error, null 类型不能赋值给 number | undefined 类型
+
+// optional properties
+interface I {
+  a: number
+  b?: number // b 的实际类型为： number | undefined
+}
+ 
+let i = <I>{}
+i.a = 2 // ok
+i.a = undefined // error, undefined 不能赋值给 number
+i.b = 3 // ok
+i.b = undefined // ok
+i.b = null // error， null 不能赋值给 number | undefined
+```
+### Type guards and type assertions
+由于 nullable 类型是通过 union 实现的，因此在使用 nullable 类型时需要先消除空类型：
+```ts
+function broken(name: string | null) {
+  return name.charAt(0).toUpperCase() + name.slice(1) // error, name is possibly undefined
+}
+// 在 JavaScript 中常用如下方法消除空值
+function fixed(name: string | null) {
+  name = name || 'default'
+  return name.charAt(0).toUpperCase() + name.slice(1) // ok
+}
+```
+但是当遇到如下这种情况时，上面消除空类型的方法又不可行：
+```ts
+function broken(name: string | null) {
+  function greeting(greet: string) {
+    return name.charAt(0).toUpperCase() + name.slice(1) + ', ' + greet  // error, name is possibly undefined
+  }
+  name = name || 'default'
+  return greeting('hello')
+}
+```
+上面编译器无法消除空类型的原因是，函数内部的嵌套函数的执行上下文是不确定的，编译器无法跟踪嵌套函数所有的调用，尤其是如果嵌套函数被 return 到函数外部，当这个函数被执行时，它内部变量例如 `name` 的类型是不明确的。
+
+在这种情况下需要使用类型断言操作符(type assertion operator) `!` 来手动的消除空值，语法为：`identifier!`，这将移除变量 `identifier` 的类型中的 `undefined` 和 `null`：
+```ts
+function fixed(name: string | null) {
+  function greeting(greet: string) {
+    return name!.charAt(0).toUpperCase() + name!.slice(1) + ', ' + greet  // ok
+  name = name || 'default'
+  return greeting('hello')
+}
+```
+
+## Type Aliases (类型别名)
+类型别名，顾名思义，就是为某个类型创建一个新的名字，并没用创建一个新的类型。类型别名与接口的概念有点类似，但是可以为包括原始类型，联合类型等任何其它类型创建别名：
+```ts
+type Name = string
+type NameResolver = () => string
+type NameOrResolver = Name | NameResolver
+
+function getName(p: NameOrResolver): Name {
+  if(typeof p === 'string') {
+    return p
+  } else {
+    return p()
+  }
+}
+```
+> 注意：为原始类型创建别名不是常见的用法，尽管它可以作为编写文档的一种形式。
+
+类似接口，类型别名也可以是泛型的：
+```ts
+type Container<T> = { value: T }
+```
+也可以像下面这样在属性中嵌套的引用类型别名本身：
+
+```ts
+type Tree<T> = {
+  value: T
+  left: Tree<T>
+  right: Tree<T>
+}
+```
+除此之外，类型别名不能出现在声明语句右边的任何位置，下面这样是错误的：
+```ts
+type myAlias = Array<myAlias> // error
+```
+### Interfaces vs. Type Aliases
+如前面所说的，类型别名可以跟接口非常相似，但是它们之间还是有一些微妙的差别。其中一个重要的差别是，type aliases 不能被扩展(extended)和实现(implemented)，也不能去扩展和实现其它类型，当需要完成这样的任务时，请使用接口。
+
+## String Literal Types
+字符串字面量类型允许你为一个字符串变量指定一个确定的值。字符串字面量类型通常与联合类型，类型守卫以及类型别名一起使用，你可以使用这些特性去模拟字符串枚举的行为：
+```ts
+type Easing = 'ease-in' | 'ease-out' | 'ease-in-out'
+
+class UIElement {
+  animate(dx: number, dy: number, easing: Easing) {
+    if (easing === 'ease-in') {
+      // ...
+    } else if (easing === 'ease-out') {
+      // ...
+    } else if (easing === 'ease-in-out') {
+      // ...
+    } else {
+      // error
+    }
+  }
+}
+
+let button = new UIElement()
+button.animate(0, 0, 'ease-in') // ok
+button.animate(0, 0, 'uneasy') // error，'uneasy' 类型不能赋值给 'ease-in' | 'ease-out' | 'ease-in-out' 类型
+```
+如上面看到的，你只能传递三个允许的字符，其它任何值都会造成错误。
+
+## Numeric Literal Types
+与字符串字面量类型类似，也有数值字面量类型：
+```ts
+function rollDice(): 1 | 2 | 3 | 4 | 5 | 6 {
+  // 只能返回 1，2，3，4，5，6，这六个数字之一，返回任何其它值都是错误
+}
+```
+
+## Enum Member Types
+前面讲[枚举](#des)的时候有说过，枚举成员也可以当作类型来使用，整个枚举可以看作是枚举成员类型的一个联合(union)。
+
+## Discriminated Unions
+你可以结合使用单例类型(singleton types)，联合类型(union types)，类型守卫(type guards)以及类型别名(type aliases)来创建更高级的模式，即 discriminated unions。
+> 通常我们说的单例类型(singleton types)，指的就是枚举成员类型以及数值/字符串字面量类型。
+
+要实现 discriminated unions，需要实现下面三点：
+1. 被联合的所有类型都有一个相同的的单例类型属性 -- the discriminant
+```ts
+// 每个类型都有属性 kind，且为单例类型
+interface Square {
+  kind: "square";
+  size: number;
+}
+interface Rectangle {
+  kind: "rectangle";
+  width: number;
+  height: number;
+}
+interface Circle {
+  kind: "circle";
+  radius: number;
+}
+```
+2. 创建一个联合类型
+```ts
+type Shape = Square | Rectangle | Circle
+```
+3. 使用 discriminated union：
+```ts
+function area(s: Shape) {
+  switch (s.kind) {
+    // 这里会有一个隐式的 type guard 的效果
+    // 编译器能够通过 s.kind 属性的 singleton type 来缩窄 s 的类型
+    case "square": return s.size * s.size; // s 的类型被缩窄为 Square
+    case "rectangle": return s.height * s.width; // s 的类型被缩窄为 Rectangle
+    case "circle": return Math.PI * s.radius ** 2; // s 的类型被缩窄为 Circle
+  }
+}
+```
+继续看下面的情况，还是上面的 `area` 函数，如果将 `switch` 的分支减少一个：
+```ts
+function area(s: Shape) {
+  switch (s.kind) {
+    case "square": return s.size * s.size; 
+    case "rectangle": return s.height * s.width;
+}
+
+area({ kind: 'circle', radius: 3 }) // ok，undefined
+```
+可以看到，即使 `switch` 的分支没有覆盖 `s` 的 discriminated union 的所有情况，编译器也不会提示错误。在这种情况下如果我们希望在编译阶段就发现问题，可以打开严格空检查设置 `--strictNullChecks`，并为函数显式指定返回类型，比如为 `area` 函数显式的指定返回类型为 number，下面的代码就不能通过编译检查：
+```ts
+function area(s: Shape): number { // error, Function lacks ending return statement and return type does not include 'undefined'
+  switch (s.kind) {
+    case "square": return s.size * s.size; 
+    case "rectangle": return s.height * s.width;
+}
+```
+更多用法请看官方文档。
+
+## Polymorphic <span style="color:red">this</span> types (多态的 this 类型)
+多态的 this 类型，顾名思义 this 代表的类型是多态的，不是固定的，请看下面的例子：
+```ts
+class BasicCalculator {
+  constructor(protected value: number = 0) { }
+  currentValue(): number {
+    return this.value
+  }
+  add(operand: number): this { // 返回 polymorphic this 类型
+    this.value += operand
+    return this
+  }
+  multiply(operand: number): this { // 返回 polymorphic this 类型
+    this.value *= operand
+    return this
+  }
+}
+
+let b = new BasicCalculator(2).add(1).multiply(5).currentValue()
+```
+因为 `add`，`multiply` 方法返回对象本身，因此可以写链式调用方法的语句。现在我们扩展 `BasicCalculator` 类：
+```ts
+class ScientificCalculator extends BasicCalculator {
+  constructor(value = 0) {
+    super(value)
+  }
+  sin(): this { // 返回 polymorphic this 类型
+    this.value = Math.sin(this.value)
+    return this
+  }
+}
+let s = new ScientificCalculator(3).add(4).sin().multiply(5).currentValue() // ok
+```
+可以看到这里的链式调用语句也能正常工作，这正是因为 `BasicCalculator` 的 `add` 和 `multiply` 方法返回的是 polymorphic this 类型，它能保证 `add` 和 `multiply` 在被调用时，将实际返回类型绑定到正确实例类型上。反之，如果 `add` 和 `multiply` 不是返回 polymorphic this 类型，而是返回具体的类类型，`ScientificCalculator` 的实例将无法继续使用链式调用，因为 `add` 将始终返回 `BasicCalculator`, 而 `BasicCalculator` 没有 `sin` 方法：
+```ts
+class BasicCalculator {
+  constructor(protected value: number = 0) { }
+  currentValue(): number {
+    return this.value
+  }
+  add(operand: number): BasicCalculator { // 返回 BasicCalculator
+    this.value += operand
+    return this
+  }
+  multiply(operand: number): BasicCalculator { // 返回 BasicCalculator
+    this.value *= operand
+    return this
+  }
+}
+
+class ScientificCalculator extends BasicCalculator {
+  constructor(value = 0) {
+    super(value)
+  }
+  sin(): this { // 返回 polymorphic this 类型
+    this.value = Math.sin(this.value)
+    return this
+  }
+}
+
+new ScientificCalculator(3).add(4).sin() // error, Property 'sin' dose not exist on type 'BasicCalculator'
+```
+
+## Index types
+利用索引类型，编译器可以检查使用动态属性名的代码，例如 JavaScript 中很常见的代码：
+```ts
+function pluck(o, names) {
+  return names.map(n => o[n])
+}
+```
+在 TypeScript 中利用索引类型查询(index type query)和索引访问操作符(indexed access operator)，可以这样写这个函数：
+```ts
+function pluck<T, K extends keyof T>(o: T, names: k[]): T[k][] {
+  return names.map(n => o[n])
+}
+
+let person = {
+  name: 'Nicholas',
+  age: 34
+}
+
+let subset1 = pluck(person, ['name']) // ok
+let subset2 = pluck(person, ['name', 'age']) // ok
+let subset3 = pluck(person, ['gender']) // error
+```
+这样 TypeScript 就可以加入类型检查，例如上面 `names` 的元素必须是 `person` 的属性，否则不能通过编译。
+
+上面使用的到的操作符 `keyof` 称作索引类型查询操作符(index type query operator)，对于任意类型 `T`，`keyof T` 代表的是 `T` 的所有公有属性名的联合类型：
+```ts
+interface Person {
+  name: string
+  age: number
+  gender: string
+}
+
+class Book {
+  constructor(
+    public author: Person,
+    public title: string,
+    public price: number,
+    private publisher: string,
+  ) {}
+}
+
+type personProps = keyof Person // "name" | "age" | "gender"
+type bookProps = keyof Book // "author" | "title" | "price"，不包含 "publisher"
+```
+第二个用到的操作符是 `T[K]`，即索引访问操作符(indexed access operator)，这里类型语法也反映了表达式语法，即 `person["name"]` 具有 `Person["name"]` 类型，在上面的例子中就是 `string` 类型，然而在泛型上下文里，`T[K]` 的类型是根据 `T` 和 `K` 的类型动态确定的，这正是它的强大之处：
+```ts
+function getProperty<T, K extends keyof T>(o: T, name: K): T[K] {
+  return o[name] // o[name] 的类型为 T[K]
+}
+
+let name = getProperty(person, 'name')  // string
+let age = getProperty(person, 'age') // number
+```
+## Mapped types
+这个类型太高级，详情请看[官方文档](http://www.typescriptlang.org/docs/handbook/advanced-types.html)。
+## Conditional Types
+TypeScript 2.8 版本引入了条件类型，形式如下：
+```ts
+T extends U ? X : Y
+```
+意思是，如果 `T` 可赋给 `U`，结果类型为 `X`，否者为 `Y`。
+
+一个条件类型 `T extends U ? X : Y` 要么被解析为 `X` 或 `Y`，要么被延迟解析，当条件判断依赖于一个或多个类型参数时就会出现延迟解析。是否解析为 `X` 或 `Y`, 或推迟解析，取决于类型系统是否有足够的信息去推断出 `T` 是否总是可以赋给 `U`.
+
+详情请看[官方文档](http://www.typescriptlang.org/docs/handbook/advanced-types.html)
+
+2.8 版本预定义了几个条件类型：
+- `Exclude<T, U>`：Exclude from `T` those types that are assignable to `U`
+- `Extract<T, U>`：Extract from `T` those types that are assignable to `U`
+- `NonNullable<T>`：Exclude `null` and `undefined` from `T`
+- `ReturnType<T>`：Obtain the return type of a function type
+- `InstanceType<T>`：Obtain the instance type of a constructor function type
+
+```ts
+type T00 = Exclude<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "b" | "d"
+type T01 = Extract<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "a" | "c"
+
+type T02 = Exclude<string | number | (() => void), Function>;  // string | number
+type T03 = Extract<string | number | (() => void), Function>;  // () => void
+
+type T04 = NonNullable<string | number | undefined>;  // string | number
+type T05 = NonNullable<(() => string) | string[] | null | undefined>;  // (() => string) | string[]
+
+function f1(s: string) {
+    return { a: 1, b: s };
+}
+
+class C {
+    x = 0;
+    y = 0;
+}
+
+type T10 = ReturnType<() => string>;  // string
+type T11 = ReturnType<(s: string) => void>;  // void
+type T12 = ReturnType<(<T>() => T)>;  // {}
+type T13 = ReturnType<(<T extends U, U extends number[]>() => T)>;  // number[]
+type T14 = ReturnType<typeof f1>;  // { a: number, b: string }
+type T15 = ReturnType<any>;  // any
+type T16 = ReturnType<never>;  // never
+type T17 = ReturnType<string>;  // Error
+type T18 = ReturnType<Function>;  // Error
+
+type T20 = InstanceType<typeof C>;  // C
+type T21 = InstanceType<any>;  // any
+type T22 = InstanceType<never>;  // never
+type T23 = InstanceType<string>;  // Error
+type T24 = InstanceType<Function>;  // Error
+```
