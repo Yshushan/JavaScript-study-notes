@@ -1,6 +1,6 @@
 ## 常用命令
 - **`git init`**: 把当前文件夹初始化为 git 仓库
-- **`git clone url/to/repository/projectname`**: 克隆远程仓库，会在当前目录创建一个名为 `projectname` 的文件夹，并初始化这个文件夹，同时拉取这个仓库所有的数据到本地。
+- **`git clone url/to/repository/projectname`**: 克隆远程仓库，会在当前目录创建一个名为 `projectname` 的文件夹，并初始化这个文件夹为本地 git 仓库，同时拉取远程仓库所有的数据到本地仓库。该命令会自动设置本地 master 分支跟踪远程 master 分支，执行完 `git clone` 命令之后，可以直接运行 `git pull` 命令，将远程 master 分支合并到本地 master 分支。
 - **`git clone url/to/repository/projectname myproject`**: 作用同上个命令，只不过本地文件夹的名字可以自定义为 `myproject`。
 - **`git status` / `git status -s(--short)`**: 查看当前目录的状态
 - **`git diff`**: 查看当前未暂存 (unstaged) 的变更
@@ -15,6 +15,21 @@
   >2. 如果文件处于已更改或已暂存但未提交状态，要从版本库中移除该文件但在本地目录中保留该文件，使用 `git rm <file> --cached` 命令。
   >3. 如果简单使用 `rm <file>` 移除本地文件，要想从版本库中移除还需执行一次 `git rm <file>` 命令。
 - **`git mv <file_from> <file_to>`**: 文件重命名
+- **`git commit --amend`**: 启动编辑器，填写提交信息，并覆盖上一次已提交历史，该命令用于撤销上一次提交记录，并用本次提交替换上一次提交。
+- **`git commit --amend -m 'commit message'`**: 作用同上，但是不启动编辑器。
+- **`git reset HEAD <file>`**: 取消暂存
+- **`git checkout -- <file>`**: 撤销文件自上次提交以来的所有更改
+- **`git remote`**: 展示关联的远程仓库的名字
+- **`git remote -v`**: 同上，同时显示远程仓库的 url
+- **`git remote add <shortname> <romote-repository-url>`**: 为本地仓库添加远程仓库，并命名为 `shortname`
+- **`git fetch <remote>`**: 获取远程仓库的最新数据到本地，但是不会自动与本地分支合并，需要手动合并。
+- **`git pull`**: 如果你当前所在分支已经设置为跟踪远程仓库的某个分支，执行该命令，将会自动 fetch 和 merge 远程分支的数据到本地分支
+- **`git push <remote> <branch>`**: 将当前分支推送到远程分支
+- **`git remote show <remote>`**: 查看远程仓库的详细信息
+- **`git remote rename <oldname> <newname>`**: 重命名远程仓库的名字
+- **`git remote remove <remote>`**: 删除远程仓库
+- **`git config --global alias.shorthand 'commmad'`**: 给命令创建别名，例如 `git config --global alias.unstage 'reset HEAD --'`
+
 
 
 ## git log 查看提交历史
@@ -26,8 +41,8 @@
 - **`git log --pertty=format:"%h %s"`**: 指定输出的格式
   > |Option| Description of output|
   > |:---:|:---:|
-  > |%H|提交 hash|
-  > |%h|提交 hash 的简写|
+  > |%H|提交的完整 hash|
+  > |%h|提交 hash 的简写（前7个字符）|
   > |%an| 作者名字|
   > |%ae|作者 email|
   > |%ad| author 时间，绝对时间|
