@@ -1695,3 +1695,85 @@ type T22 = InstanceType<never>;  // never
 type T23 = InstanceType<string>;  // Error
 type T24 = InstanceType<Function>;  // Error
 ```
+# Modules
+TypeScript 继承了 ES6 中 modules 的概念，modules 在它自己的作用域内被执行，而不是在全局作用域。
+在一个 module 中声明的变量、函数、类等等在其它 modules 中是不可见的，除非显式的将这些变量导出。而要在一个module 中使用其它 modules 导出的变量，必须先将这些变量导入。
+
+任何包含 top-level `import` 或 `export` 的文件都被视为 module，而不包含 top-level `import` 或 `export` 的文件被视为普通脚本，它里面的内容暴露在全局作用域内。
+
+## Export
+### Exporting a declaration
+使用关键字 `export` 可以导出任何声明，例如 variable, function, class, interface, type alias, enum 等等：
+
+*module.ts*
+```ts
+// 导出 interface
+export interface StringValidator {
+  isAcceptable(s: string): boolean
+}
+// 导出 variable
+export const numberRegexp = /^[0-9]+$/
+// 导出 class
+export class ZipCodeValidator implements StringValidator {
+  isAcceptable(s: string) {
+    return s.length === 5 && numberRegexp.test(s)
+  }
+}
+```
+*module.ts* 也可以改写为：
+```ts
+interface StringValidator {
+  isAcceptable(s: string): boolean
+}
+
+const numberRegexp = /^[0-9]+$/
+
+class ZipCodeValidator implements StringValidator {
+  isAcceptable(s: string) {
+    return s.length === 5 && numberRegexp.test(s)
+  }
+}
+
+// 按原名导出
+export { StringValidator, numberRegexp }
+// 按别名 validatorAlias 导出
+export { ZipCodeValidator as validatorAlias }
+```
+### Re-exports
+如果一个模块要扩展另一个模块，并暴露它的一部分功能，可以使用 re-export 语法：
+*extended-module.ts*
+```ts
+export class ParseIntBasedZipCodeValidator {
+  isAcceptable(s: string) {
+    return s.length === 5 && parseInt(s).toString() === s
+  }
+}
+// 以别名的方式重新导出 ZipCodeValidator
+export { ZipCodeValidator as RegExpBasedZipCodeValidator } from './module'
+// re-export 整个 module
+export * from './module'
+```
+re-export 不会将 original module 导入到当前 module 的作用域，也不会引入一个本地变量。
+
+## Import
+*another-module.ts*
+```ts
+import { StringValidator, numberRegexp, ZipCodeValidator } from './module';
+
+let myValidator = new ZipCodeValidator()
+```
+导入变量时也可以重命名：
+```ts
+import { ZipCodeValidator as ZipCodeAlias } from './module';
+
+let myValidator = new ZipCodeAlias()
+```
+将整个 module 作为一个变量导入：
+```ts
+import * as Validator from './module';
+
+let myValidator = new Validator.ZipCodeValidator()
+class NewValidator implements Validator.StringValidator {
+  // ...
+}
+```
