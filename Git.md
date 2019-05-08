@@ -31,6 +31,7 @@
 - **`git config --global alias.shorthand 'commmad'`**: 给命令创建别名，例如 `git config --global alias.unstage 'reset HEAD --'`
 
 
+
 ## git log 查看提交历史
 
 - **`git log --patch(-p)`**: 展示每次提交引入的变更
