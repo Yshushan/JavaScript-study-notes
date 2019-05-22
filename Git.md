@@ -3,7 +3,7 @@
 - **`git clone url/to/repository/projectname`**: 克隆远程仓库，会在当前目录创建一个名为 `projectname` 的文件夹，并初始化这个文件夹为本地 git 仓库，同时拉取远程仓库所有的数据到本地仓库。该命令会自动设置本地 master 分支跟踪远程 master 分支，执行完 `git clone` 命令之后，可以直接运行 `git pull` 命令，将远程 master 分支合并到本地 master 分支。
 - **`git clone url/to/repository/projectname myproject`**: 作用同上个命令，只不过本地文件夹的名字可以自定义为 `myproject`。
 - **`git status` / `git status -s(--short)`**: 查看当前目录的状态
-- **`git diff`**: 查看当前未暂存 (unstaged) 的变更
+- **`git diff <filename>`**: 查看当前未暂存 (unstaged) 的变更
 - **`git diff --staged`**: 查看已暂存 (staged) 的变更
 - **`git difftool`**: 打开图形界面查看未暂存的变更
 - **`git commit`**: 启动编辑器，填写 commit message 然后退出编辑器(vim 退出命令为 `:wq`)，提交当前变更。
@@ -63,6 +63,13 @@
 - **`git log --grep=`**: Only show commits with a commit message containing the string
 - **`git log -S`**: Only show commits adding or removing code matching the string
 
-
-
-  
+## 分支
+- **`git branch <newBranch>`**: 创建一个新分支，但不会切换到该新分支
+- **`git checkout <branch>`**: 切换分支
+- **`git checkout -b <branch>`**: 创建一个新分支，并切换到该分支
+- **`git merge <branch>`**: 将指定分支合并到当前分支
+- **`git branch -d <branch>`**: 删除分支
+- **`git branch`**: 显示所有分支
+- **`git branch -v`**: 显示所有分支以及在它们上面的最后一次提交
+- **`git branch --merged`**: 显示已经合并到当前分支的分支
+- **`git branch --no-merged`**: 显示还未合并到当前分支的分支
