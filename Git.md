@@ -42,9 +42,11 @@
 
 ## reset 和 checkout 命令
 - **`git reset --soft <commit-hash>`**: 使本地仓库回退到指定的历史提交点，该提交点以后的提交记录都将清除，但是工作空间不会发生变化，不会丢失数据，该命令是工作目录安全的。可用于修改历史提交记录。
-- **`git reset <commit-hash>`**: 使本地仓库回退到指定的历史提交点，该提交点以后的提交记录都将清除，但是工作空间不会发生变化，不会丢失数据，该命令是工作目录安全的。可用于修改历史提交记录。
+- **`git reset <commit-hash>`**: 将本地仓库工作目录的状态回退到指定的 commit hash 对应的版本，该提交点以后的提交记录都将清除，但是工作空间不会发生变化，不会丢失数据，该命令是工作目录安全的。
+- **`git reset <commit-hash> <file>`**: 将指定的文件的状态回退到指定的 commit hash 对应的版本，文件的内容不会发生变化，不会丢失数据，该命令是工作目录安全的。
 - **`git checkout <commit-hash>`**: git 为你创建一个临时的 HEAD detached 分支，并切换到该分支，同时将工作目录回退到指定的 commit hash 对应的版本。该命令不会影响到其它分支，你可以在这个临时分支上做更改和提交。注意，只要你切换到其它分支，这个临时分支都将被自动删除，如果你要保留在这个临时分支上的变更和提交，你需要新建一个分支：`git checkout -b <new-branch>`， 这样 git 将切换到新的分支，并自动删除这个临时分支。
 - **`git checkout -b <branch> <commit-hash>`**: `git checkout <commit-hash>` 和 `git checkout -b <branch>` 命令的简写。
+- **`git checkout <commit-hash> <file>`**: 将指定的文件回退到指定的 commit hash 对应的版本，**文件的内容会发生变化，会丢失数据，该命令不是工作目录安全的**。
 
 
 ## git log 查看提交历史
