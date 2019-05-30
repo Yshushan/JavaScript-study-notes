@@ -21,7 +21,7 @@
 - **`git checkout -- <file>`**: 撤销文件自上次提交以来的所有更改
 - **`git remote`**: 展示关联的远程仓库的名字
 - **`git remote -v`**: 同上，同时显示远程仓库的 url
-- **`git remote add <shortname> <romote-repository-url>`**: 为本地仓库添加远程仓库，并命名为 `shortname`
+- **`git remote add <shortname> romote/repository/url`**: 为本地仓库添加远程仓库，并命名为 `shortname`
 - **`git fetch <remote>`**: 获取远程仓库的最新数据到本地，但是不会自动与本地分支合并，需要手动合并。
 - **`git pull`**: 如果你当前所在分支已经设置为跟踪远程仓库的某个分支，执行该命令，将会自动 fetch 和 merge 远程分支的数据到本地分支
 - **`git push <remote> <branch>`**: 将当前分支推送到远程分支
@@ -29,6 +29,19 @@
 - **`git remote rename <oldname> <newname>`**: 重命名远程仓库的名字
 - **`git remote remove <remote>`**: 删除远程仓库
 - **`git config --global alias.shorthand 'commmad'`**: 给命令创建别名，例如 `git config --global alias.unstage 'reset HEAD --'`
+- **`git stash`**: 贮藏当前工作目录未提交的更改
+- **`git stash -u`**: 贮藏当前工作目录未提交的更改,以及为跟踪的文件
+- **`git stash list`**: 查看贮藏区列表
+- **`git stash apply`**: 应用最近的一次贮藏记录到当前工作目录, 但是之前处于 staged 状态的变更会退回到 unstage 状态
+- **`git stash apply <stash-name>`**: 应用指定的贮藏记录到当前工作目录
+- **`git stash apply --index`**: 应用最近的一次贮藏记录到当前工作目录，同时恢复暂存区 (staged) 的状态
+- **`git stash drop <stash-name>`**: 删除指定的贮藏记录
+- **`git stash pop`**: 应用最近的一次贮藏到当前工作目录，同时删除该贮藏记录
+- **`git stash branch <branch>`**: 创建一个新分支 `<branch>`, 并在这新分支上应用上次贮藏的记录，同时删除这条贮藏记录。
+  
+## git reset
+- **`git reset --soft <commit-hash>`**: 回退到指定的历史提交点，该提交点以后的提交记录都将清除，但是工作空间不会发生变化，不会丢失数据，该命令是工作目录安全的。可用于修改历史提交记录。
+- **`git reset <commit-hash>`**: 回退到指定的历史提交点，该提交点以后的提交记录都将清除，但是工作空间不会发生变化，不会丢失数据，该命令是工作目录安全的。可用于修改历史提交记录。
 
 
 
@@ -38,7 +51,7 @@
 - **`git log -n`**: 展示最近 n 次提交记录
 - **`git log --stat / --shortstat`**: 展示每次提交的变更的统计信息
 - **`git log --pretty=oneline`**: 以单行展示每一次提交的简略信息
-- **`git log --pertty=format:"%h %s"`**: 指定输出的格式
+- **`git log --pretty=format:"%h %s"`**: 指定输出的格式
   > |Option| Description of output|
   > |:---:|:---:|
   > |%H|提交的完整 hash|
@@ -53,7 +66,7 @@
   > |%cd| 提交时间，绝对时间|
   > |%cr| 提交时间，相对时间|
 
-- **`git log --pertty=format:"%h %s" --graph`**: adds a nice little ASCII graph showing your branch and merge history
+- **`git log --pretty=format:"%h %s" --graph`**: adds a nice little ASCII graph showing your branch and merge history
 - **`git log --abbrev-commit`**: Show only the first few characters of the SHA-1 checksum instead of all 40
 - **`git log --oneline`**: `git log --pretty=oneline --abbrev-commit` 的简写
 - **`git log --relative-date`**: Display the date in a relative format (for example, “2 weeks ago”) instead of using the full date format
@@ -62,14 +75,20 @@
 - **`git log --author=`**: Only show commits in which the author entry matches the specified string.
 - **`git log --grep=`**: Only show commits with a commit message containing the string
 - **`git log -S`**: Only show commits adding or removing code matching the string
+- **`git show <commit-hash>`**: 查看指定的 hash 所对应的提交记录
 
 ## 分支
 - **`git branch <newBranch>`**: 创建一个新分支，但不会切换到该新分支
-- **`git checkout <branch>`**: 切换分支
+- **`git checkout <branch>`**: 切换分支. （注意：如果本地仓库当前不存在 `branch` 分支，而要切换的分支名正好匹配唯一远程仓库的某个分支名，使用该命令将自动创建一个跟踪远程同名分支的 `branch` 分支，并切换到该分支）
 - **`git checkout -b <branch>`**: 创建一个新分支，并切换到该分支
+- **`git checkout -b <local_branch> <remote/branch>`**: 创建并切换到一个新的本地分支 `local_branch`, 同时让它跟踪远程 `remote/branch` 分支
+- **`git checkout --track <remote/branch>`**: 是上面的命令的简写，创建一个与远程 `branch` 分支同名的本地分支 `branch`，并跟踪该远程分支
 - **`git merge <branch>`**: 将指定分支合并到当前分支
 - **`git branch -d <branch>`**: 删除分支
 - **`git branch`**: 显示所有分支
 - **`git branch -v`**: 显示所有分支以及在它们上面的最后一次提交
+- **`git branch -vv`**: 显示所有本地分支跟踪远程分支的信息
 - **`git branch --merged`**: 显示已经合并到当前分支的分支
 - **`git branch --no-merged`**: 显示还未合并到当前分支的分支
+- **`git push <reomote> --delete <branch>`**: 删除远程分支 `<remote>/<branch>`
+
