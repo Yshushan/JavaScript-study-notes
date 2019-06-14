@@ -1777,3 +1777,75 @@ class NewValidator implements Validator.StringValidator {
   // ...
 }
 ```
+## Default exports
+每个 module 可以有一个 `default` 导出，而且只能有一个
+*default-export-module.ts*
+```ts
+export default class ParseIntBasedZipCodeValidator {
+  isAcceptable(s: string) {
+    return s.length === 5 && parseInt(s).toString() === s
+  }
+}
+```
+使用 `export default` 导出的模块，导入的方式也有所不同：
+*import-default-module.ts*
+```ts
+import Validator from './default-export-module'
+
+let myValidator = new Validator()
+```
+`default` 导出可以导出 anonymous function：
+*anonymous.ts*
+```ts
+export default (s: string) => { return s.length }
+```
+*test.ts*
+```ts
+import myFunc from './anonymous'
+
+let len = myFunc('hello')  // 5
+```
+甚至可以导出字面常量：
+*OneTwoThree.ts*
+```ts
+export default '123'
+```
+*log.ts*
+```ts
+import num from './OneTwoThree'
+
+console.log(num) // '123'
+```
+
+## `export =` and `import = require()`
+TypeScript 支持模拟传统 CommonJS 和 AMD 的工作流。
+
+`export =` 语法用于导出单个对象，可以是一个 class、interface、namespace、function、enum：
+*ZipCodeValidator.ts*
+```ts
+let numberRegexp = /^[0-9]+$/
+class ZipCodeValidator {
+  isAcceptable(s: string) {
+    return s.length === 5 && numberRegexp.test(s);
+  }
+}
+export = ZipCodeValidator
+```
+对于使用 `export =` 导出的模块，必须使用 `import module = require('module')` 语法导入：
+*Test.ts*
+```ts
+import zip = require('./ZipCodeValidator)
+
+// Some samples to try
+let strings = ["Hello", "98052", "101"]
+
+// Validators to use
+let validator = new zip()
+
+// Show whether each string passed each validator
+strings.forEach(s => {
+  console.log(`"${ s }" - ${ validator.isAcceptable(s) ? "matches" : "does not match" }`);
+})
+```
+关于 Module 的更多内容可以参考[这里](https://basarat.gitbooks.io/typescript/content/docs/project/modules.html)
+ 
