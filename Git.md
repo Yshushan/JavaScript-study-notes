@@ -23,21 +23,26 @@
 - **`git remote -v`**: 同上，同时显示远程仓库的 url
 - **`git remote add <shortname> romote/repository/url`**: 为本地仓库添加远程仓库，并命名为 `shortname`
 - **`git fetch <remote>`**: 获取远程仓库的最新数据到本地，但是不会自动与本地分支合并，需要手动合并。
+- **`git pull <remote> <branch>`**: 拉取指定的远程分支到本地并与当前本地分支合并。
 - **`git pull`**: 如果你当前所在分支已经设置为跟踪远程仓库的某个分支，执行该命令，将会自动 fetch 和 merge 远程分支的数据到本地分支
 - **`git push <remote> <branch>`**: 将当前分支推送到远程分支
 - **`git remote show <remote>`**: 查看远程仓库的详细信息
 - **`git remote rename <oldname> <newname>`**: 重命名远程仓库的名字
 - **`git remote remove <remote>`**: 删除远程仓库
+- **`git config --list`**: 显示 git 配置
 - **`git config --global alias.shorthand 'commmad'`**: 给命令创建别名，例如 `git config --global alias.unstage 'reset HEAD --'`
 - **`git stash`**: 贮藏当前工作目录未提交的更改
-- **`git stash -u`**: 贮藏当前工作目录未提交的更改,以及为跟踪的文件
+- **`git stash push -m <message>`**: 贮藏当前工作目录未提交的更改, 同时给该贮藏记录标记 message
+- **`git stash -u`**: 贮藏当前工作目录未提交的更改,以及未跟踪的文件
 - **`git stash list`**: 查看贮藏区列表
 - **`git stash apply`**: 应用最近的一次贮藏记录到当前工作目录, 但是之前处于 staged 状态的变更会退回到 unstage 状态
 - **`git stash apply <stash-name>`**: 应用指定的贮藏记录到当前工作目录
 - **`git stash apply --index`**: 应用最近的一次贮藏记录到当前工作目录，同时恢复暂存区 (staged) 的状态
-- **`git stash drop <stash-name>`**: 删除指定的贮藏记录
+- **`git stash drop <stash-name>`**: 删除指定的贮藏记录，如果不提供 `<stash-name>` 将删除最新的一条贮藏记录
 - **`git stash pop`**: 应用最近的一次贮藏到当前工作目录，同时删除该贮藏记录
+- **`git stash clear`**: 清除所有贮藏记录
 - **`git stash branch <branch>`**: 创建一个新分支 `<branch>`, 并在这新分支上应用上次贮藏的记录，同时删除这条贮藏记录。
+
 
 
 ## reset 和 checkout 命令
@@ -80,6 +85,9 @@
 - **`git log --grep=`**: Only show commits with a commit message containing the string
 - **`git log -S`**: Only show commits adding or removing code matching the string
 - **`git show <commit-hash>`**: 查看指定的 hash 所对应的提交记录
+- **`git log -- <file>`**: 查看指定文件的提交历史，只显示提交记录，不包含该文件每次的变更信息
+- **`git log -p <file>`**: 查看指定文件的提交历史，包含该文件每次的变更信息
+- **`gitk <file>`**: 打开 GUI 查看指定文件的提交历史
 
 ## 分支
 - **`git branch <newBranch>`**: 创建一个新分支，但不会切换到该新分支
@@ -95,4 +103,14 @@
 - **`git branch --merged`**: 显示已经合并到当前分支的分支
 - **`git branch --no-merged`**: 显示还未合并到当前分支的分支
 - **`git push <reomote> --delete <branch>`**: 删除远程分支 `<remote>/<branch>`
+
+## 只拉取远程仓库的某个目录或某些目录
+```bat
+git init
+git config core.sparsecheckout true
+echo '/directory/*' >> .git/info/sparse-checkout
+git remote add origin <reomte-url>
+git checkout -b <local-branch> <remote/branch>
+git pull
+```
 
