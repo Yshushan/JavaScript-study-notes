@@ -1081,7 +1081,7 @@ b = 5 // ok
 但是来自不同枚举类型的枚举值之间是不兼容的：
 ```ts
 enum Color { red, green, blue }
-enum Status {ready, waiting}
+enum Status { ready, waiting }
 
 let c = Color.red 
 c = Status.ready // error
@@ -1741,6 +1741,7 @@ export { ZipCodeValidator as validatorAlias }
 ```
 ### Re-exports
 如果一个模块要扩展另一个模块，并暴露它的一部分功能，可以使用 re-export 语法：
+
 *extended-module.ts*
 ```ts
 export class ParseIntBasedZipCodeValidator {
@@ -1779,6 +1780,7 @@ class NewValidator implements Validator.StringValidator {
 ```
 ## Default exports
 每个 module 可以有一个 `default` 导出，而且只能有一个
+
 *default-export-module.ts*
 ```ts
 export default class ParseIntBasedZipCodeValidator {
