@@ -367,7 +367,7 @@ actions: {
 
 ## 模块化
 
-由于使用单一状态树 (single state tree)，应用里的所有共享状态都被包含在同一个对象中。随着我们应用规模变的越来越大，这个store 也会膨胀的很大，这可能不是好事，也难以维护。
+由于使用单一状态树 (single state tree)，应用里的所有共享状态都被包含在同一个对象中。随着应用的规模越来越大，store 也会膨胀得越来越大，这可能不是好事，也难以维护。
 
 Vuex 允许你将 store 分割成小的模块，每个模块包含自己 `state`, `getters`, `mutations`, `actions`:
 ```js
@@ -424,7 +424,7 @@ const moduleA = {
   }
 }
 ```
-如果要访问根 `state`，`getters` 接受根 `state` 作为第三个参数, 而 `actions` 通过 `context.rootState` 暴露根 `state`：
+如果要访问根 `state`，`getters` 接受 `rootState` 作为第三个参数, 而 `actions` 通过 `context.rootState` 暴露根 `state`：
 ```js
 const moduleA = {
   // ...
@@ -494,12 +494,12 @@ const store = new Vuex.Store({
         login () { ... },
 
         otherAction ({commit, dispatch, state, getters, rootState, rootGetters}) {
-          // commit 是局部的，默认 commit 模块内部的 mutation
+          // commit 默认 commit 模块内部的 mutation
           commit('innerMutation')
           // 要 commit 全局的 mutation，使用 {root: true} 作为第三个参数
           commit('globalMutation', payload, {root: true})
 
-          // dispatch 是局部的，默认 dispatch 模块内部的 action
+          // dispatch 默认 dispatch 模块内部的 action
           dispatch('innerAction')
           // 要 dispatch 全局的 action，使用 {root: true} 作为第三个参数
           dispatch('globalAction', payload, {root: true})
