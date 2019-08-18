@@ -237,6 +237,32 @@ filters 可以接受额外的参数：
 
 > 注意： filter 内的 `this` 并不指向当前 Vue 实例，所以不能在 filter 中通过 `this` 访问实例属性。实际上 filter 的设计只是为了方便对文本经行简单的格式化，不应在 filter 中进行复杂的逻辑操作，如果需要对数据进行复杂的转换，请使用 `computed`。
 
+## [provide / inject](https://vuejs.org/v2/api/#provide-inject)
+
+通过依赖注入的方式，让所有后代组件都能直接访问**根父组件**的内部的属性。
+
+在根**根父组件**内通过 `provide` 选项指定想要提供给后代组件的数据或方法，在后代组件中通过 `inject` 选项接受需要的数据和方法：
+
+```js
+// root parent
+provide: function() {
+  return {
+    commonData: this.foo,
+    commonMethod: this.bar
+  }
+}
+
+// descendant components
+inject: ['commonData', 'commonMethod']
+```
+
+相较通过 `$parent` 实例方法访问父组件的实例而言，通过 `provide/inject` 依赖注入的方式有以下优点：
+
+- 不论子组件嵌套有多深，只要它是根父组件的后代，都可以直接访问根父组件注入的依赖。而通过 `$parent` 只能访问上一级父组件的实例，如果需要访问更上层级的父组件就要使用 `vm.$parent.$parent...` 这种显得冗长啰嗦的方式。
+- 不会将整个父组件实例暴露在子组件中，这样更加安全，不用担心不需要的父组件数据被修改。 而通过 `$parent` 会将整个父组件实例暴露。
+
+> 注意：通过 `provide/inject` 依赖注入进行父子组件通信的方式，也有很多缺点。 它使应用重构变得困难，而且通过 `provide` 注入的数据也不是相应式的。所以你不应该在应用代码中使用 `provide/inject`, 实际上这种依赖注入方式是为开发高阶组件提供的。如果想要在后代组件中直接修改注入的数据，也许你可能需要使用状态管理 Vuex。
+
 ## Vue 实例属性
 
 ### vm.\$data
