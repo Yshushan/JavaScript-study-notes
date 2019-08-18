@@ -189,6 +189,9 @@ filters 可以接受额外的参数：
 ```
 这里，`filterA` 被定义成接受三个参数的函数，第一个参数始终是它前面的表达式的值，字符串字面量 `'arg1'` 将被当作第二个参数，表达式 `arg2` 的值，被当作第三个参数。
 
+> 注意： filter 内的 `this` 并不指向当前 Vue 实例，所以不能在 filter 中通过 `this` 访问实例属性。实际上 filter 的设计只是为了方便对文本经行简单的格式化，不应在 filter 中进行复杂的逻辑操作，如果需要对数据进行复杂的转换，请使用 `computed`。
+
+
 ## Vue 实例属性 
 ### vm.$data
 Vue 实例监视的 data 对象，Vue 实例也代理了 data 的属性的访问权(以 `'_'` 和 `'$'` 开头的属性除外)：
@@ -254,7 +257,7 @@ new Vue({
 当前实例的直接子组件实例的数组，注意，这个数组不保证子实例的顺序，而且也不是响应式的。详情看[这里](https://vuejs.org/v2/api/#vm-children)。
 
 ### vm.$slots
-用于编程式的访问通过插槽 (slot) 分发的内容，通常在写渲染函数 (render function) 时使用，对于具名插槽 (named slot) 分发的内容将被映射到这个对象的同名字段，例如，分发内容带有 `slot="foo"` 属性，那么它将被映射到 `vm.$slots.foo`，而 `vm.$slots.default` 包含所有未命名插槽分发的内容。详情看[这里](https://vuejs.org/v2/api/#vm-slots)。
+用于编程式的访问通过插槽 (slot) 分发的内容，通常在写渲染函数 (render function) 时使用，对于具名插槽 (named slot) 分发的内容将被映射到这个对象的同名字段，例如，分发内容带有 `v-slot:foo` 指令，那么它将被映射到 `vm.$slots.foo`，而 `vm.$slots.default` 包含所有未命名插槽分发的内容。详情看[这里](https://vuejs.org/v2/api/#vm-slots)。
 
 ### vm.$scopedSlots
 用于编程式的访问通过作用域插槽 (scoped slot) 分发的内容。详情看[这里](https://vuejs.org/v2/api/#vm-scopedSlots)。

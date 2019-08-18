@@ -121,11 +121,11 @@ Vue CLI 项目中，对静态资源（static assets）有两种不同的处理�
 
 ## CSS 处理
 
-所有编译过的 css，都是由 `css-loader` 来处理的，它解析 url，并将它们作为模块请求来处理，这意味者你可以像上面说的那样，使用相对路径来引用 css 资源。
+所有编译过的 css，都是由 `css-loader` 来处理的，它解析 url，并将它们作为模块请求来处理，这意味者你可以像上面说的那样，使用相对路径来引用 css 资源。如果你想要引用 npm 依赖里的资源，或者使用 webpack 路径别名，请在引用路径上添加 `~`前缀以避免歧义。
 
 ### 预处理器（Pre-Processors)
 
-在创建项目时，你可以选择一个预处理器（Sass/Less/Stylus），如果你没有选择，Vue CLI 在内部的 webpack 配置中仍然会为你预先设置好一些配置。所以后面如果你需要用到预处理器，你只需要安装相应的 webpack loader 即可：
+在创建项目时，你可以选择一个预处理器（Sass/Less/Stylus），如果你没有选择，Vue CLI 在内部的 webpack 配置中仍然会为你预先设置好一些配置。所以后面如果你需要用到预处理器，只需要安装相应的 webpack loader 即可：
 
 ```
 # Sass
@@ -223,7 +223,7 @@ console.log(process.env.VUE_APP_BAR)
 除了 `VUE_APP_*` 变量，还有两个特殊的环境变量: `NODE_ENV` 和 `BASE_URL`，它们在你的 app 代码中总是可用的：
 
 - `NODE_ENV` 根据你的 app 当前运行的 mode， 有三种不同的取值：`"development"`, `"production"`, `"test"`。
-- `BASE_URL` 代表的是你的项目部署的基路径(base path), 它的值取决于 `vue.config.js` 中的 `baseUrl` 选项。
+- `BASE_URL` 代表的是你的项目部署的基路径(base path), 它的值取决于 `vue.config.js` 中的 `publicPath` 选项。
 
 此外，所有的客户端环境变量在 `public/index.html` 中都可以做为 `interpolation` 使用。更多细节请参考[这里](https://cli.vuejs.org/guide/mode-and-env.html#using-env-variables-in-client-side-code)。
 
