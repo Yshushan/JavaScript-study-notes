@@ -1,5 +1,30 @@
 # Vue
 
+## Hooks
+
+- `beforeCreate`: 在实例初始化(initialized)之后，`data` observation 和 `event/watcher` 设置之前调用。
+- `created`: 在实例创建完成(created)之后调用。在这个阶段，已经完成了对实例选项的处理，包括：data observation, computed properties, methods, watch/event callbacks. 但是 mounting 阶段还没开始，`$el`（实例的根 DOM 元素） 属性还不能使用。
+- `beforeMount`: 在实例开始挂载(mounting)之前调用，render 函数将首次调用。
+- `mounted`: 在实例被挂载之后调用。注意，此时并不保证所有子组件的实例都已被挂载，如果你想要等待整个视图都被渲染，可以在 `mounted` 中使用 `vm.$nextTick` 函数：
+
+  ```js
+  mounted: function() {
+    this.$nextTick(function() {
+      // 此时整个视图都已渲染完毕
+    })
+  }
+  ```
+
+- `beforeUpdate`: 在数据变动之后，但是 DOM 更新之前调用，这是在视图更新之前访问现有 DOM 的好地方，例如手动删除添加的事件侦听器。
+- `update`: 在数据变动导致的虚拟 DOM 重新渲染(re-render) 和 patched 之后调用。在该钩子函数调用之后，组件的 DOM 将被更新，因此在这个钩子里你可以执行 DOM 相关的操作，但是在大多数情况下，你应该避免在这里更改组件的状态(state), 如果要响应状态的变化，最好使用计算属性(computed)或监听器(watch)。
+
+  注意，同 `mounted` 钩子一样，在 `updated` 钩子阶段并不保证所有子组件的虚拟 DOM 已经 re-render 和 patched。如果你想要等待整个视图被重新渲染，可以在 `mounted` 中使用 `vm.$nextTick` 函数，同 `mounted`。
+
+- `activated`: 当被 `keep-alive` 组件 cached 的组件重新激活时调用。
+- `deactivated`: 当被 `keep-alive` 组件 cached 的组件失活时调用。
+- `beforeDestroy`: Vue 实例被销毁之前调用，在这个阶段，实例还可以被正常访问。
+- `destroyed`: 实例被销毁之后调用。当这个钩子被调用， 所有的指令被解绑，所有的事件监听器被移除，所有的子组件实例也被销毁。
+
 ## Mixins
 
 Mixins 是一种灵活分发可重用功能给组件的一种方式，一个 mixin 对象可以包含任何组件选项，当一个组件使用一个 mixin 时， 这个 mixin 里的所有选项都将以适当的方式混合到组件自身的选项中：
@@ -241,7 +266,7 @@ filters 可以接受额外的参数：
 
 通过依赖注入的方式，让所有后代组件都能直接访问**根父组件**的内部的属性。
 
-在根**根父组件**内通过 `provide` 选项指定想要提供给后代组件的数据或方法，在后代组件中通过 `inject` 选项接受需要的数据和方法：
+在**根父组件**内通过 `provide` 选项指定想要提供给后代组件的数据或方法，在后代组件中通过 `inject` 选项接收需要的数据和方法：
 
 ```js
 // root parent
@@ -261,7 +286,7 @@ inject: ['commonData', 'commonMethod']
 - 不论子组件嵌套有多深，只要它是根父组件的后代，都可以直接访问根父组件注入的依赖。而通过 `$parent` 只能访问上一级父组件的实例，如果需要访问更上层级的父组件就要使用 `vm.$parent.$parent...` 这种显得冗长啰嗦的方式。
 - 不会将整个父组件实例暴露在子组件中，这样更加安全，不用担心不需要的父组件数据被修改。 而通过 `$parent` 会将整个父组件实例暴露。
 
-> 注意：通过 `provide/inject` 依赖注入进行父子组件通信的方式，也有很多缺点。 它使应用重构变得困难，而且通过 `provide` 注入的数据也不是相应式的。所以你不应该在应用代码中使用 `provide/inject`, 实际上这种依赖注入方式是为开发高阶组件提供的。如果想要在后代组件中直接修改注入的数据，也许你可能需要使用状态管理 Vuex。
+> 注意：通过 `provide/inject` 依赖注入进行父子组件通信的方式，也有很多缺点。 它使应用重构变得困难，而且通过 `provide` 注入的数据也不是响应式的。所以你不应该在应用代码中使用 `provide/inject`, 实际上这种依赖注入方式是为开发高阶组件提供的。如果想要在后代组件中直接修改注入的数据，也许你可能需要使用状态管理 Vuex。
 
 ## Vue 实例属性
 
@@ -454,7 +479,7 @@ vm.$emit('test', 'hi')
 
 ### vm.\$mount([elementOrSelector])
 
-如果 Vue 实例在实例化时不存在 `el` 选项，它将处于未挂载状态，即没有与之关联的 DOM 元素。如果你没有提供 `el`选项，你可以：
+如果 Vue 实例在实例化时不存在 `el` 选项，它将处于未挂载状态，即没有与之关联的 DOM 元素。如果你没有提供 `el`选项，你可以使用 `$mount` 方法将其挂载在某个 DOM 上：
 
 ```js
 const myComponent = Vue.extend({
