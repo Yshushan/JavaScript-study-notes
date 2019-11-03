@@ -8,7 +8,7 @@ function registerInfoCheck(req, res, next) {
     users.findOne({ username: req.body.username }),
     users.findOne({ email: req.body.email})
   ]).then(([user1, user2]) => {
-    if (user1) res.send({ result: 'fail', msg: '用户名已存在！' })
+    if (user1) res.send({ result: 'fail', msg: '用户名已存在！!' })
     else if (user2) res.send({ result: 'fail', msg: '邮箱已被注册过!' })
     else {
       const hash = bcrypt.hashSync(req.body.password, 10)

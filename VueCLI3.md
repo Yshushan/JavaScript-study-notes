@@ -142,8 +142,8 @@ npm install -D stylus-loader stylus
 
 ```scss
 <style lang="scss">
-$color=red
-</style>
+  $color: red;
+</style>;
 ```
 
 一切都将正常工作。
@@ -194,7 +194,7 @@ VUE_APP_BAR=bar
 
 ### 模式（mode）
 
-Vue CLI 项目有三种环境模式:
+Vue CLI 项目默认有三种环境模式:
 
 ```
 vue-cli-service serve                                   # 启动开发环境模式 (development)
@@ -202,13 +202,34 @@ vue-cli-service build / vue-cli-service test:e2e        # 启动生产环境模�
 vue-cli-service test:unit                               # 启动测试环境模式 (test)
 ```
 
-在每个环境下，`NODE_ENV` 被默认地设置为对应的值，例如在开发环境(development)下，`NODE_ENV` 被设置为 `"development"`。
+即在运行 `vue-cli-service` 命令时，相应的环境变量配置文件（`.env`, `.env.[mode]`, `.env.[mode].local`）会被加载，如果这些文件里不包含 `NODE_ENV` 变量，那么此时的 `NODE_ENV` 会被默认地设置为对应的值，例如在生产环境(production)下，`NODE_ENV` 被设置为 `"production"`， 在测试环境(test)下，`NODE_ENV` 被设置为 `"test"`，否则默认设置为 `"development"` 模式。
 
 你也可以通过传递 `--mode` 选项给 `vue-cli-service` 命令来手动覆盖默认的模式，例如：
 
 ```
 vue-cli-service build --mode development
 ```
+这样将以 development 模式（使用开发环境变量）构建应用。
+
+> **注意**：
+> 
+> - Vue CLI 项目默认只有 `development`, `production`, `test` 三种模式，即如果你在 `vue-cli-service` 命令中使用 `--mode` 将模式指定为这三种模式以外的模式，且对应的环境变量文件中没有设置 `NODE_ENV` 变量，则此时的 `NODE_ENV` 变量会被默认设置为 `development`, 而并不是你使用 `--mode` 指定的那个值。例如：
+> 
+>   假设在你的项目根目录下有一个`.env.uat` 文件： 
+>   ```
+>   VUE_APP_FOO = variable for uat environment
+>   ```
+>   然后使用 `vue-cli-service build --mode uat` 命令构建应用，此时 `NODE_ENV` 的值既不是 `"uat"` 也不是 `"production"`, 而是默认值 `"development"`。
+>
+>   也就是说，使用 `--mode [newMode]`, 只能确保应用在构建时去加载与 `newMode` 对应的环境变量文件，它并不保证应用会运行在 `newMode` 模式，并不会把 `NODE_ENV` 设置为 `newMode` 的值，因为 Vue CLI 项目默认只有 `"development"`, `"production"`, `"test"` 三种模式。如果需要将 `NODE_ENV` 指定为其它值，可以在对应的环境变量文件中设置 `NODE_ENV` 变量，例如在上面例子的 `.env.uat` 文件中手动设置 `NODE_ENV` 变量来覆盖默认值： 
+>
+>   ```
+>   NODE_ENV = uat
+>   VUE_APP_FOO = variable for uat environment
+>   ```
+>
+>   这样以 `--mode uat` 启动应用时, `NODE_ENV` 将为 `"uat"`。
+>- 虽然你可以将环境变量 `NODE_ENV` 指定为 `"development"`, `"production"`, `"test"` 这三个以外的其它值，但是，如果你是在运行 `vue-cli-service build` 命令， 请务必将 `NODE_ENV` 的值设置为 `"production"`，这样才能确保的打包出来的文件是最优的用于部署的文件，无论你要部署的哪个环境，都应该如此。
 
 ### 在客户端代码中使用环境变量
 
@@ -313,7 +334,7 @@ const fs = require('fs')
 
 const pages = {}
 fs.readdirSync('./src/pages').forEach(name => {
-  pages[name]: {
+  pages[name] = {
     entry: `./src/pages/${name}/main.js`, // 每个页面的入口文件
     template: './public/index.html', // 所有页面公用一个 template， 当然也可以为每个页面指定不同的 template
     filename: `${name}.html`, // 生成的html文件路径，相对于 outputDir 指定的目录
@@ -401,3 +422,29 @@ module.exports = {
 ### [devServer.proxy](https://cli.vuejs.org/config/#devserver-proxy)
 
 如果你的前端应用和后端 API 服务不是运行在同一主机上，则需要在开发期间将 API 请求代理另一台主机的 API 服务器。
+
+### [configureWebpack](https://cli.vuejs.org/guide/webpack.html#simple-configuration)
+
+这个选项的值可以是一个 object 或 一个 function，如果是一个 object，它将通过 `webpack-merge` 直接合并到 webpack config 中:
+
+```js
+module.exports = {
+  configureWebpack: {
+    plugins: [new MyAwesomeWebpackPlugin()]
+  }
+}
+```
+
+如果这个值是一个 function，这个 function 接受 resolved config 作为它的参数，可以在 function 内直接修改这个 config，或返回一个 object， 这个 object 将会被合并到 webpack config 中：
+
+```js
+module.exports = {
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      // mutate config for production...
+    } else {
+      // mutate for development...
+    }
+  }
+}
+```

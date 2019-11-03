@@ -641,13 +641,29 @@ const assert = require('assert').strict
 
 ### assert.strictEqual(actual, expected[, message])
 
+检查 `expected` 是否和 `actual` 严格相等, 同时检查 reference equal。如果不严格相等则抛出错误，`message` 参数可选，可以是字符串或 `Error` 实例，代表抛出的错误信息。
+
+```js
+const assert = require('assert').strict
+assert.strictEqual([1, 2, 3], [1, 2, 3]) //非引用相等，throw error
+
+let a = { s: 1 }
+let b = a
+assert.strictEqual(a, b) // ok
+```
+
 ### assert.notStrictEqual(actual, expected[, message])
 
 ### assert.deepStrictEqual(actual, expected[, message])
 
-### assert.notDeepStrictEqual(actual, expected[, message])
+检查 `expected` 是否和 `actual` 严格相等, 不检查 reference equal。如果不严格相等则抛出错误，`message` 参数可选，可以是字符串或 `Error` 实例，代表抛出的错误信息。
 
-检查 `expected` 是否和 `actual` 严格相等。如果不严格相等则抛出错误，`message` 参数可选，可以是字符串或 `Error` 实例，代表抛出的错误信息。
+```js
+const assert = require('assert').strict
+assert.deepStrictEqual([1, 2, 3], [1, 2, 3]) //ok
+```
+
+### assert.notDeepStrictEqual(actual, expected[, message])
 
 ### assert.ifError(value)
 
@@ -676,7 +692,7 @@ process.argv.forEach((arg, index) => {
 })
 ```
 
-执行该脚本：`node yss.js a 1`， 结果为：
+执行脚本：`node yss.js a 1`， 结果为：
 
 ```
 0: path/to/node.exe
