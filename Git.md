@@ -144,14 +144,26 @@
 - **`git branch -vv`**: 显示所有本地分支跟踪远程分支的信息
 - **`git branch --merged`**: 显示已经合并到当前分支的分支
 - **`git branch --no-merged`**: 显示还未合并到当前分支的分支
-- **`git push <reomote> --delete <branch>`**: 删除远程分支 `<remote>/<branch>`
+- **`git push <remote> --delete <branch>`**: 删除远程分支 `<remote>/<branch>`
+
+## 打标签
+- **`git tag`**: 列出已有标签
+- **`git tag -l 'mode'`**: 使用特定的模式查找标签，例如 `git tag -l 'v1.8.*'`，会列出 v1.8 系列
+- **`git tag <tagName>`**: 打轻量标签，例如 `git tag v1.2`
+- **`git tag -a <tagName> -m <message>`**: 打附注标签，例如 `git tag -a v1.2 -m 'my version 1.2'`
+- **`git tag -a <tagName> <commit-hash>`**: 给历史提交打标签
+- **`git push <remote> <tagName>`**: 将指定标签推送到远程仓库 
+- **`git push <remote> --tags`**: 将本地所有标签推送到远程仓库
+- **`git show <tagName>`**： 查看标签信息
+- **`git tag -d <tagName>`**: 删除本地标签，远程仓库的这个标签不会被删除
+- **`git push <remote> :refs/tags/<tagName>`**: 本地删除标签后是用该命令来同步远程仓库
 
 ## 只拉取远程仓库的某个目录或某些目录
 ```bat
 git init
 git config core.sparsecheckout true
 echo '/directory/*' >> .git/info/sparse-checkout
-git remote add origin <reomte-url>
+git remote add origin <remote-url>
 git checkout -b <local-branch> <remote/branch>
 git pull
 ```

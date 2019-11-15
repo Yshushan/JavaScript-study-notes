@@ -229,7 +229,7 @@ vue-cli-service build --mode development
 >   ```
 >
 >   这样以 `--mode uat` 启动应用时, `NODE_ENV` 将为 `"uat"`。
->- 虽然你可以将环境变量 `NODE_ENV` 指定为 `"development"`, `"production"`, `"test"` 这三个以外的其它值，但是，如果你是在运行 `vue-cli-service build` 命令， 请务必将 `NODE_ENV` 的值设置为 `"production"`，这样才能确保的打包出来的文件是最优的用于部署的文件，无论你要部署的哪个环境，都应该如此。
+>- 虽然你可以将环境变量 `NODE_ENV` 指定为 `"development"`, `"production"`, `"test"` 这三个以外的其它值，但是，如果你是在运行 `vue-cli-service build` 命令， 请务必将 `NODE_ENV` 的值设置为 `"production"`，这样才能确保打包后的文件是最优的用于部署的文件，无论你要部署到哪个环境，都应该如此。
 
 ### 在客户端代码中使用环境变量
 
