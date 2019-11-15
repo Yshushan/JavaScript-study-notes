@@ -13,7 +13,8 @@ let add = function(x: number, y: number) {
 ```
 TypeScript 能够根据函数的 return statement 推断出函数的返回类型，因此很多时候在定义函数时可以省略掉 return type。
 
-函数类型分为两部分：参数类型和返回类型。在写函数类型时，参数类型和返回类型都必须写全，不能省略，即使函数没有返回值，也要用 `void` 来指定返回类型，返回类型与参数列表之间使用 `=>` 分隔：
+**函数类型**分为两部分：参数类型和返回类型。在写**函数类型**时，参数类型和返回类型都必须写全，不能省略，即使函数没有返回值，也要用 `void` 来指定返回类型，返回类型与参数列表之间使用 `=>` 分隔：
+
 ```ts
 let add: (a: number, b: number) => number = function(x: number, y: number): number {
   return x + y
@@ -115,7 +116,7 @@ let myObj = { label: 'The Walking Dead', season: 10 }
 printLabel(myObj)  // ok, 'The Walking Dead'
 printLabel({ label: 'Game of Thrones', season: 8 })  // error
 ```
-这里定义了一个接口 `labeledValue` 来描述 `printLabel` 的参数的 shape，但是在函数调用的时候，我们传递给 `printLabel` 的参数不必显式的实现 `labeledValue` 接口，只要传递的参数的 shape 符合要求即可，而且编译器在执行类型检查时不关心传递进来的参数中属性的位置顺序，只要匹配定义接口中的各个属性的类型即可。
+这里定义了一个接口 `labeledValue` 来描述 `printLabel` 函数参数的 shape，但是在函数调用的时候，我们传递给 `printLabel` 的参数不必显式的实现 `labeledValue` 接口，只要传递的参数的 shape 符合要求即可，而且编译器在执行类型检查时不关心传递进来的参数中属性的位置顺序，只要匹配定义接口中的各个属性的类型即可。
 
 同时，从上面的例子中可以看出，如果调用函数时以变量的形式传递参数(如 `myObj`)，参数中可以有额外的属性(如`season: 10`), 通俗的说就是，传递的变量的 shape 可以是函数期望参数的 shape 的超集。但是如果在调用函数时直接传递对象字面量，那么传递的参数的 shape 必须与函数期望参数的 shape 完全一致(属性的顺序除外)，否则会报错。
 
@@ -155,7 +156,7 @@ let book: Product = { name: 'Hello, JavaScript', price: 12.5 }
 book.name = 'Hello, TypeScript'  // error
 book.price = 34
 ```
-TypeScript 有个 `ReadonlyArray<T>` 类型，与 `Array<T>` 类型类似，但是移除了所有的 mutating method(e.g. `pop, push, shift, unshift, reverse`)，这能确保在数组创建之后，你无法再改变它：
+TypeScript 有个 `ReadonlyArray<T>` 类型，与 `Array<T>` 类型类似，但是移除了所有的 mutating method (e.g. `pop, push, shift, unshift, reverse`)，这能确保在数组创建之后，你无法再改变它：
 ```ts
 let a: number[] = [1,2,3,4,5]
 let b: ReadonlyArray<number> = a
@@ -1850,4 +1851,3 @@ strings.forEach(s => {
 })
 ```
 关于 Module 的更多内容可以参考[这里](https://basarat.gitbooks.io/typescript/content/docs/project/modules.html)
- 

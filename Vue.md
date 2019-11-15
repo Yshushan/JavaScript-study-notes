@@ -502,6 +502,32 @@ callback 将在下一次 DOM 更新周期之后执行。当你更改了某些数
 
 详情看[这里](https://vuejs.org/v2/api/#vm-destroy)。
 
+## Vue 全局方法
+### Vue.use(plugin)
+
+用于安装一个 Vue.js 插件，参数 `plugin` 可以是一个 `Object` 或 `Function`，如果 `plugin` 是一个对象，这个对象必须暴露出一个 `install` 方法， 如果 `plugin` 是一个函数，这个函数会被当作`install` 方法。而这个 `install` 方法会被 Vue 调用，同时将 `vue` 作为参数传递给它。
+
+注意，`Vue.use` 这个方法必须在 `new Vue()` 之前调用， 且如果对同一个 `plugin` 多次调用这个方法，这个 `plugin` 也只会被安装一次。
+
+结合 webpack 提供的 [`require.context`](https://webpack.js.org/api/module-methods/#requirecontext) API， 可以很方便的批量全局注册组件： 
+```js
+// src/components/index.js
+const context = require.context('./global', false, /\.vue$/)
+
+export default Vue => {
+  context.keys().forEach(key => {
+    const comp = context(key).default
+    Vue.component(comp.name, comp)
+  })
+} 
+
+// src/main.js
+import Vue from 'vue'
+import globalComps from './components'
+
+Vue.use(globalComps)
+```
+
 ## 内建指令
 
 ### v-on
