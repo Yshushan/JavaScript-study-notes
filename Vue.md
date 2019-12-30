@@ -241,7 +241,7 @@ filter 总是接受它前面的表达式的值作为它的第一个参数，例�
 ```js
 {
   {
-    ;message | filterA | filterB
+    message | filterA | filterB
   }
 }
 ```
@@ -588,9 +588,9 @@ Vue.use(globalComps)
     // ...
     methods: {
       // 当事件处理函数需要额外参数时，在 v-on 中使用 inline statement
-      handler(p1, p1, e) {
+      handler(p1, p2, e) {
         console.log(p1) // => 'hello'
-        console.log(p1) // => 'world'
+        console.log(p2) // => 'world'
         // e 是原生事件对象
         console.log(e.target.nodeName) // => BUTTON
 
@@ -661,6 +661,7 @@ v-bind 支持下列修饰符：
 - `.prop`：绑定的是 DOM property，而不是 HTML attribute ([看这里](https://stackoverflow.com/questions/6003819/what-is-the-difference-between-properties-and-attributes-in-html#answer-6004028))。如果是在组件上使用带有 `prop` 修饰符的 `v-on`，被绑定的属性将被设置到组件的`$el`上。
 - `.camel`：将 kebab-case 类型的 attribute name 转换为 camel-case 类型。
 - `.sync`：监听**更新绑定的值**的自定义事件的语法糖：
+  
   ```
   <myComponent v-bind:propA.sync="someValue"/>
   <!-- 等价于 -->

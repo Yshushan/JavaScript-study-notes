@@ -145,6 +145,7 @@
 - **`git branch --merged`**: 显示已经合并到当前分支的分支
 - **`git branch --no-merged`**: 显示还未合并到当前分支的分支
 - **`git push <remote> --delete <branch>`**: 删除远程分支 `<remote>/<branch>`
+- **`git push <remote> <branch>`**: 将本地分支`<branch>` 推送到远程分支，会在远程生成一个同名的分支
 
 ## 打标签
 - **`git tag`**: 列出已有标签
