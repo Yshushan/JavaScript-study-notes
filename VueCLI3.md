@@ -5,7 +5,7 @@
 - 通过 prompts 手动选择需要的特性：
 
       vue create <app-name>
-
+        
       # 在 Git Bash 中使用
       winpty vue.cmd create <app-name>
 
@@ -212,24 +212,25 @@ vue-cli-service build --mode development
 这样将以 development 模式（使用开发环境变量）构建应用。
 
 > **注意**：
-> 
+>
 > - Vue CLI 项目默认只有 `development`, `production`, `test` 三种模式，即如果你在 `vue-cli-service` 命令中使用 `--mode` 将模式指定为这三种模式以外的模式，且对应的环境变量文件中没有设置 `NODE_ENV` 变量，则此时的 `NODE_ENV` 变量会被默认设置为 `development`, 而并不是你使用 `--mode` 指定的那个值。例如：
-> 
->   假设在你的项目根目录下有一个`.env.uat` 文件： 
->   ```
->   VUE_APP_FOO = variable for uat environment
->   ```
->   然后使用 `vue-cli-service build --mode uat` 命令构建应用，此时 `NODE_ENV` 的值既不是 `"uat"` 也不是 `"production"`, 而是默认值 `"development"`。
 >
->   也就是说，使用 `--mode [newMode]`, 只能确保应用在构建时去加载与 `newMode` 对应的环境变量文件，它并不保证应用会运行在 `newMode` 模式，并不会把 `NODE_ENV` 设置为 `newMode` 的值，因为 Vue CLI 项目默认只有 `"development"`, `"production"`, `"test"` 三种模式。如果需要将 `NODE_ENV` 指定为其它值，可以在对应的环境变量文件中设置 `NODE_ENV` 变量，例如在上面例子的 `.env.uat` 文件中手动设置 `NODE_ENV` 变量来覆盖默认值： 
+> 假设在你的项目根目录下有一个`.env.uat` 文件： 
+> ```
+> VUE_APP_FOO = variable for uat environment
+> ```
+> 然后使用 `vue-cli-service build --mode uat` 命令构建应用，此时 `NODE_ENV` 的值既不是 `"uat"` 也不是 `"production"`, 而是默认值 `"development"`。
 >
->   ```
->   NODE_ENV = uat
->   VUE_APP_FOO = variable for uat environment
->   ```
+> 也就是说，使用 `--mode [newMode]`, 只能确保应用在构建时去加载与 `newMode` 对应的环境变量文件，它并不保证应用会运行在 `newMode` 模式，并不会把 `NODE_ENV` 设置为 `newMode` 的值，因为 Vue CLI 项目默认只有 `"development"`, `"production"`, `"test"` 三种模式。如果需要将 `NODE_ENV` 指定为其它值，可以在对应的环境变量文件中设置 `NODE_ENV` 变量，例如在上面例子的 `.env.uat` 文件中手动设置 `NODE_ENV` 变量来覆盖默认值： 
 >
->   这样以 `--mode uat` 启动应用时, `NODE_ENV` 将为 `"uat"`。
->- 虽然你可以将环境变量 `NODE_ENV` 指定为 `"development"`, `"production"`, `"test"` 这三个以外的其它值，但是，如果你是在运行 `vue-cli-service build` 命令， 请务必将 `NODE_ENV` 的值设置为 `"production"`，这样才能确保打包后的文件是最优的用于部署的文件，无论你要部署到哪个环境，都应该如此。
+> ```
+> NODE_ENV = uat
+> VUE_APP_FOO = variable for uat environment
+> ```
+>
+> 这样以 `--mode uat` 启动应用时, `NODE_ENV` 将为 `"uat"`。
+>
+> - 虽然你可以将环境变量 `NODE_ENV` 指定为 `"development"`, `"production"`, `"test"` 这三个以外的其它值，但是，如果你是在运行 `vue-cli-service build` 命令， 请务必将 `NODE_ENV` 的值设置为 `"production"`，这样才能确保打包后的文件是最优的用于部署的文件，无论你要部署到哪个环境，都应该如此。
 
 ### 在客户端代码中使用环境变量
 
@@ -313,7 +314,7 @@ module.exports = {
 
 这个选项代表的是你的生产环境构建 (`vue-cli-service build`) 的输出目录，默认值为 `'dist'`，在进行生产构建之前，这个目录将会被清空（这个行为可以通过传递命令行选项 `--no-clean` 来关闭）。
 
-`outputDir` 选项等价于 `webpack` 的 `output.path`，但是同 `baseUrl` 一样，你应该总是配置 `outputDir`，而不是 `webpack` 的 `output.path`。
+`outputDir` 选项等价于 `webpack` 的 `output.path`，但是同 `publicPath` 一样，你应该总是配置 `outputDir`，而不是 `webpack` 的 `output.path`。
 
 ### indexPath
 

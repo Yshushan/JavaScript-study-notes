@@ -4,7 +4,7 @@
 
 document.getElementById(idValue) | element.getElementById(idValue)
 document.getElementsByTagName(tagName) | element.getElementsByTagName(tagName)
-document.getElementsByClassName(classValue) | element.getElementsByClassName(classValue) 
+document.getElementsByClassName(classValue) | element.getElementsByClassName(classValue)
 document.querySelector(selector) | element.querySelector(selector) //根据选择器选择第一个匹配的元素
 document.querySelectorAll(selector) | element.querySelectorAll(selector) //返回NodeList，匹配的所有元素的集合
 
@@ -24,7 +24,7 @@ element.removeAttribute(attrName)
 //添加、插入、删除、替换节点
 parent.appendChild(childElement) //返回新添加节点的引用
 parent.insertBefore(newElement,targetElement) //返回新插入节点的引用
-parent.removeChild(childElement) //返回被删除节点的引用    
+parent.removeChild(childElement) //返回被删除节点的引用
 parent.replaceChild(newChild,oldChild) //返回被替换节点的引用
 
 //样式读写操作
@@ -39,7 +39,7 @@ window.getComputedStyle(element[,pesudo-element])
 document.documentElement //Return the <html> element
 document.doctype //Return the document's doctype
 document.documentMode //Return the mode used by the browser
-document.documentURI //Return the URI of the document 
+document.documentURI //Return the URI of the document
 element.attributes //Return a NamedNodeMap of an element's attributes
 element.className //set or return the class name of an element (the value of an element's class attribute).
 
@@ -61,7 +61,7 @@ element.nextElementSibling //类似element.nextSibling，但只返回元素节�
 element.previousElementSibling //类似element.previousSibling，但只返回元素节点
 element.childElementCount //返回值和element.children.length相等
 
-element.textContent 
+element.textContent
 //设置或返回指定节点的文本内容，如果节点内有子节点，同时也返回所有字节的文本内容
 //设置时会删除节点内部的所有内容
 
@@ -101,8 +101,8 @@ classlists.length //Return the number of classes in the list. This property is r
 classlists.add(classname1, ...more) //Add one or more class names to an element.
 // If the specified class already exist, the class will not be added
 
-classlists.contains(classname) //Return a Boolean value, 
-//indicating whether an element has the specified class name. 
+classlists.contains(classname) //Return a Boolean value,
+//indicating whether an element has the specified class name.
 
 classlists.item(index) //Return the class name with a specified index number from an element.
 //Index starts at 0. Return null if the index is out of range
@@ -118,7 +118,7 @@ classlists.toggle(classname, boolValue)
 //Remove a class: element.classList.toggle("classToRemove", false);
 //Add a class: element.classList.toggle("classToAdd", true);
 
-element.addEventListener(eventName,handler,captureMode) 
+element.addEventListener(eventName,handler,captureMode)
 // captureMode:true   capturing
 // captureMode:false  bubbling
 ```
@@ -136,3 +136,44 @@ Document.children
 Document.firstElementChild
 Document.lastElementChild
 ```
+
+
+## atob()
+将 base64 编码的字符串解码
+
+## btoa()
+将二进制数据进行 base64 编码
+
+## [FileReader](https://developer.mozilla.org/en-US/docs/Web/API/FileReader)
+```html
+<input id="fileInput" type="file" />
+```
+
+```js
+const fileInput = document.querySelector('#fileInput')
+
+fileInput.addEventListener('change', () => Array.from(fileInput.files).forEach(handleFile))
+
+function handleFile(file) {
+  const fileReader = new FileReader()
+
+  fileReader.onload = function(evt) {
+    console.log(evt.target.result)
+    // do some logic
+  }
+  fileReader.onerror = function(err) {
+    console.log(err)
+    fileReader.abort()
+  }
+
+  // 读取文件
+  fileReader.readAsArrayBuffer(file)
+  // fileReader.readAsBinaryString(file)
+  // fileReader.readAsDataURL(file)
+  // fileReader.readAsText(file)
+}
+```
+
+## File
+
+## Blob()
