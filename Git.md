@@ -8,6 +8,7 @@
 - **`git config --[system | global | local] <key>`**: 查看某个级别下的某个具体的配置项
 - **`git config <key> <value>`**: 设置本地配置项， 等同于 `git config --local <key> <value>`
 - **`git config --[system | global | local] <key> <value>`**: 设置某个级别下的某个具体的配置项
+- **`git config --unset --[system | global | local] <key>`**: 删除某个级别下的某个配置
 
 ## 查看帮助
 
