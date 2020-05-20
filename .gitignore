@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .idea/
 .vscode/
 node_modules/
@@ -17,3 +18,7 @@ js*.md
 *.jpg
 *.png
 test/
+=======
+*
+!*.md
+>>>>>>> 870195f0c4f536bc32e2c5c507642575b7852e7b

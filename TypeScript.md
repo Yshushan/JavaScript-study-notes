@@ -112,13 +112,13 @@ function printLabel(labeledObj: labeledValue) {
 }
 
 printLabel({ label: 'Shameless' })  // 'Shameless'
-let myObj = { label: 'The Walking Dead', season: 10 } 
+let myObj = { label: 'The Walking Dead', season: 10 }
 printLabel(myObj)  // ok, 'The Walking Dead'
 printLabel({ label: 'Game of Thrones', season: 8 })  // error
 ```
 这里定义了一个接口 `labeledValue` 来描述 `printLabel` 函数参数的 shape，但是在函数调用的时候，我们传递给 `printLabel` 的参数不必显式的实现 `labeledValue` 接口，只要传递的参数的 shape 符合要求即可，而且编译器在执行类型检查时不关心传递进来的参数中属性的位置顺序，只要匹配定义接口中的各个属性的类型即可。
 
-同时，从上面的例子中可以看出，如果调用函数时以变量的形式传递参数(如 `myObj`)，参数中可以有额外的属性(如`season: 10`), 通俗的说就是，传递的变量的 shape 可以是函数期望参数的 shape 的超集。但是如果在调用函数时直接传递对象字面量，那么传递的参数的 shape 必须与函数期望参数的 shape 完全一致(属性的顺序除外)，否则会报错。
+同时，从上面的例子中可以看出，如果调用函数时以变量的形式传递参数（如 `myObj`），参数中可以有额外的属性（如 `season: 10`）, 通俗的说就是，传递的变量的 shape 可以是函数期望参数的 shape 的超集。但是如果在调用函数时直接传递对象字面量，那么传递的参数的 shape 必须与函数期望参数的 shape 完全一致（属性的顺序除外），否则会报错。
 
 ## Optional Properties
 默认情况下，接口中定义的属性都是必须的(required)，例如上面例子中 `printLabel` 函数的参数 `labeledObj` 的属性 `label` 就是必须的，在调用时必须提供。但是像定义函数时指定可选参数一样，也可以在属性名后面紧跟一个符号 `?` 来为接口定义可选属性：
@@ -165,7 +165,7 @@ b.push(6) // error
 b.length = 100 // error
 a = b // error
 ```
-从上面可以看到，你甚至不能将 `ReadonlyArray` 赋回给常规数组, 除非使用 type assertion: 
+从上面可以看到，你甚至不能将 `ReadonlyArray` 赋回给常规数组, 除非使用 type assertion:
 ```ts
 a = b as number[]
 ```
@@ -445,7 +445,7 @@ class Animal {
 
 class Snake extends Animal {
   length: number
-  constructor(name: string, len: number) { 
+  constructor(name: string, len: number) {
     super(name)  // 在子类的构造函数内必须首先调用父类的构造函数
     this.length = len
   }
@@ -454,7 +454,7 @@ class Snake extends Animal {
       super.move(distanceInMeters)  // 访问父类的公有方法
   }
   getInfo(){
-    return `${this.name}/* 访问父类的公有属性 */ is ${this.length}m long` // 
+    return `${this.name}/* 访问父类的公有属性 */ is ${this.length}m long` //
   }
 }
 ```
@@ -745,8 +745,8 @@ function constraintIdentityFn<T extends { length: number }>(arg: T): T {
   console.log(arg.length)  // 这里，编译器知道了 arg 有 length 属性，所以会通过检查
   return arg
 }
+
 // 或者使用一个接口来描述限制
-/* 
 interface ConstraintInterface {
   length: number
 }
@@ -754,7 +754,7 @@ function constraintIdentityFn<T extends ConstraintInterface>(arg: T): T {
   console.log(arg.length)
   return arg
 }
-*/
+
 constraintIdentityFn(3)  // Error: Number does not have a .length property
 constraintIdentityFn('hello') // Ok
 constraintIdentityFn({ value: 3, length: 10 }) // Ok
@@ -790,7 +790,7 @@ enum Direction {
 }
 
 enum Direction {
-  Up = 3, 
+  Up = 3,
   Down, // 4
   Left = 8,
   Right // 9
@@ -856,14 +856,14 @@ enum myEnum {
   B, // follow a numeric constant member
   C = B,  // reference to previously defined constant member
   D = AnotherEnum.A, // reference to previously defined constant member from a different enum
-  E = A + D, // +, -, *, /, % ... operators with constant member as operands 
-  
+  E = A + D, // +, -, *, /, % ... operators with constant member as operands
+
   // computed member
   F = '123'.length
 }
 ```
 ## <span id="des">Union enums and enum member types</span>
-There is a special subset of constant enum member that aren't calculated: literal enum members. A literal enum member is a constant enum member with no initialized value, or with values that are initialized to 
+There is a special subset of constant enum member that aren't calculated: literal enum members. A literal enum member is a constant enum member with no initialized value, or with values that are initialized to
 - any string literal (e.g. `'foo', 'bar', 'baz'`)
 - any numeric literal (e.g. `1, 100`)
 - a unary minus applied to any numeric literal (e.g. `-1, -100`)
@@ -1084,7 +1084,7 @@ b = 5 // ok
 enum Color { red, green, blue }
 enum Status { ready, waiting }
 
-let c = Color.red 
+let c = Color.red
 c = Status.ready // error
 ```
 
@@ -1218,7 +1218,7 @@ pet.layEggs()
 pet.swim() // error
 pet.fly() // error
 ```
-## Type Guards and Differentiating Types 
+## Type Guards and Differentiating Types
 如上面例子看到的那样，`getSmallPet` 虽然返回一个 `Fish` 和 `Bird` 的联合类型，但是我们只能访问这两个类型共有的成员 `layEggs`，即使在运行时阶段(runtime)可以确定返回类型为 `Fish`，但是 `pet.swim()` 依然无法通过编译检查。这使得联合类型在某些时候显得有点 tricky，不过也有应对办法，最简单直观的就是使用类型断言(type assertion):
 ```ts
 let pet = getSmallPet()
@@ -1263,7 +1263,7 @@ function isString(x: any): x is String {
 function padLeft(value: string, padding: string | number) {
   if (isNumber(padding)) {
     return Array(padding + 1).join(" ") + value;
-  } 
+  }
   if (isString(padding)) {
     return padding + value;
   }
@@ -1352,7 +1352,7 @@ interface I {
   a: number
   b?: number // b 的实际类型为： number | undefined
 }
- 
+
 let i = <I>{}
 i.a = 2 // ok
 i.a = undefined // error, undefined 不能赋值给 number
@@ -1509,7 +1509,7 @@ function area(s: Shape) {
 ```ts
 function area(s: Shape) {
   switch (s.kind) {
-    case "square": return s.size * s.size; 
+    case "square": return s.size * s.size;
     case "rectangle": return s.height * s.width;
 }
 
@@ -1519,7 +1519,7 @@ area({ kind: 'circle', radius: 3 }) // ok，undefined
 ```ts
 function area(s: Shape): number { // error, Function lacks ending return statement and return type does not include 'undefined'
   switch (s.kind) {
-    case "square": return s.size * s.size; 
+    case "square": return s.size * s.size;
     case "rectangle": return s.height * s.width;
 }
 ```
@@ -1824,6 +1824,7 @@ console.log(num) // '123'
 TypeScript 支持模拟传统 CommonJS 和 AMD 的工作流。
 
 `export =` 语法用于导出单个对象，可以是一个 class、interface、namespace、function、enum：
+
 *ZipCodeValidator.ts*
 ```ts
 let numberRegexp = /^[0-9]+$/
@@ -1835,6 +1836,7 @@ class ZipCodeValidator {
 export = ZipCodeValidator
 ```
 对于使用 `export =` 导出的模块，必须使用 `import module = require('module')` 语法导入：
+
 *Test.ts*
 ```ts
 import zip = require('./ZipCodeValidator)
