@@ -428,3 +428,63 @@ location /some/path/ {
     proxy_pass http://www.example.com/link/;
 }
 ```
+下面的例子会将所有匹配到这个 `location` 块的请求转发到指定的代理服务器，转发的地址可以是一个域名或 IP 地址，同时也可以包含一个端口：
+```nginx
+location ~ \.php {
+    proxy_pass http://127.0.0.1:8000;
+}
+```
+如果代理服务器的地址以一个 URI 结尾，nginx 会用该地址替换请求 URI 中与 `location` 参数匹配的部分。例如上面第一个例子中，代理服务器的地址以 `/link/` 结尾，那么对于 URI 为 `/some/path/page.html` 的请求，将会被代理到 `http://www.example.com/link/page.html`。如果 `proxy_pass` 指定的地址不包含 URI ，或者无法确定要替换的 URI 部分，则会传递完整的请求 URI。
+
+要将请求传递到非 HTTP 代理服务器，应使用适当的 `**_ pass` 指令：
+- `fastcgi_pass` 传递请求到一个 FastCGI 服务器
+- `uwsgi_pass` 传递请求到一个 uwsgi 服务器
+- `scgi_pass` 传递请求到一个 SCGI 服务器
+- `memcached_pass` 传递请求到一个 memcached 服务器
+
+### Passing Request Headers
+
+默认情况下，nginx 在代理请求中会重新定义两个头字段 "Host" 和 "Connection"，并去除其值为空字符串的头字段。默认 "Host" 设置为 `$proxy_host` 变量，"Connection" 设置为 `close`。
+
+要更改这些设置以及修改其它头字段，请使用 `proxy_set_header` 指令。可以在 `location` 块中指定该指令。也可以在特定的 `server` 上下文或 `http` 块中指定它。例如：
+```nginx
+location /some/path/ {
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass http://localhost:8000;
+}
+```
+在这个配置中，头字段 "Host" 被设置为 `$host` 变量.
+
+若要阻止某个头字段传递到代理服务器，请将其设置为空字符串：
+```nginx
+location /some/path/ {
+    proxy_set_header Accept-Encoding "";
+    proxy_pass http://localhost:8000;
+}
+```
+### Configuring Buffers
+默认情况下，nginx 缓冲来自代理服务器的响应。响应存储在内部缓冲区中，直到接收到整个响应后才发送给客户端。 缓冲有助于优化客户端的性能，如果将响应从 nginx 同步传递到客户端，则这可能会浪费代理服务器的时间。但是，如果启用缓冲后，nginx 允许代理服务器快速处理响应，而 nginx 将响应存储的时间与客户端下载响应所需的时间一样长。
+
+负责启用和禁用缓冲的指令是 `proxy_buffering`。 默认情况下，它设置为 `on` 即启用了缓冲。
+
+`proxy_buffers` 指令控制为请求分配的缓冲区的大小和数量。来自代理服务器的响应的第一部分存储在单独的缓冲区中，缓冲区的大小由 `proxy_buffer_size` 指令设置。这部分通常包含一个相对较小的响应头，并且可以使其小于其余响应的缓冲区。
+
+在下面的示例中，增加了默认缓冲区数，并使响应第一部分的缓冲区大小小于默认值。
+```nginx
+location /some/path/ {
+    proxy_buffers 16 4k;
+    proxy_buffer_size 2k;
+    proxy_pass http://localhost:8000;
+}
+```
+如果禁用了缓冲，则 nginx 会将从代理服务器接收到的响应同步发送到客户端。对于需要尽快开始接收响应的快速交互客户端，此行为可能是理想的。
+
+要在特定 `location` 中禁用缓冲，请 `location` 中将 `proxy_buffering` 设置为 `off`，如下：
+```nginx
+location /some/path/ {
+    proxy_buffering off;
+    proxy_pass http://localhost:8000;
+}
+```
+在这种情况下，nginx 仅使用 `proxy_buffer_size` 配置的缓冲区来存储响应的当前部分。
