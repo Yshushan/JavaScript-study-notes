@@ -11,3 +11,6 @@
   - 对数组里的每个元素进行observe
 - vue 异步渲染
 - computed watch method 区别
+- node 模块解析过程
+- promise.all/promise.allSettled
+- ["1", "2", "3"].map(parseInt)
