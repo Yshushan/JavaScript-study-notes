@@ -186,3 +186,8 @@ git remote add origin <remote-url>
 git checkout -b <local-branch> <remote/branch>
 git pull
 ```
+## 凭据管理
+- **`git config --global credential.helper store`**: 凭证用明文的形式存放在磁盘中，并且永不过期。这意味着除非你修改了你在 Git 服务器上的密码，否则你永远不需要再次输入你的凭证信息。这种方式的缺点是你的密码是用明文的方式存放在你的 home 目录下
+- **`git config --global credential.helper 'store --file ~/.my-credentials'`**: "store" 模式可以接受一个 `--file <path>` 参数，可以自定义存放密码的文件路径（默认是 ~/.git-credentials ）
+- **`git config --global credential.helper cache`**: 将凭证存放在内存中一段时间。 密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。
+- **`git config --global credential.helper 'cache --time 3600'`**:  "cache" 模式有 `--timeout <seconds>` 参数，可以设置后台进程的存活时间（默认是 900，也就是 15 分钟）

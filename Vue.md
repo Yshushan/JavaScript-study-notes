@@ -509,7 +509,7 @@ callback 将在下一次 DOM 更新周期之后执行。当你更改了某些数
 
 注意，`Vue.use` 这个方法必须在 `new Vue()` 之前调用， 且如果对同一个 `plugin` 多次调用这个方法，这个 `plugin` 也只会被安装一次。
 
-结合 webpack 提供的 [`require.context`](https://webpack.js.org/api/module-methods/#requirecontext) API， 可以很方便的批量全局注册组件： 
+结合 webpack 提供的 [`require.context`](https://webpack.js.org/api/module-methods/#requirecontext) API， 可以很方便的批量全局注册组件：
 ```js
 // src/components/index.js
 const context = require.context('./global', false, /\.vue$/)
@@ -519,7 +519,7 @@ export default Vue => {
     const comp = context(key).default
     Vue.component(comp.name, comp)
   })
-} 
+}
 
 // src/main.js
 import Vue from 'vue'
@@ -661,7 +661,7 @@ v-bind 支持下列修饰符：
 - `.prop`：绑定的是 DOM property，而不是 HTML attribute ([看这里](https://stackoverflow.com/questions/6003819/what-is-the-difference-between-properties-and-attributes-in-html#answer-6004028))。如果是在组件上使用带有 `prop` 修饰符的 `v-on`，被绑定的属性将被设置到组件的`$el`上。
 - `.camel`：将 kebab-case 类型的 attribute name 转换为 camel-case 类型。
 - `.sync`：监听**更新绑定的值**的自定义事件的语法糖：
-  
+
   ```
   <myComponent v-bind:propA.sync="someValue"/>
   <!-- 等价于 -->
@@ -845,3 +845,14 @@ The workaround is to either use expressions without spaces or quotes, or replace
 ### [keep-alive](https://vuejs.org/v2/api/#keep-alive)
 
 ### [slot](https://vuejs.org/v2/api/#slot-1)
+
+
+
+
+
+# Vue3 变动和新增特性
+
+- `beforeDestroy` `destroyed` Lifecycle hooks 变更为 `beforeUnmount` 和 `unmounted`
+- 新增了 `emits` 组件选项，用于声明该组件发出的自定义事件。[详情](https://v3.vuejs.org/guide/component-custom-events.html#defining-custom-events)
+- `v-model` 指令新增 argument 和 modifier。[详情](https://v3.vuejs.org/guide/component-custom-events.html#v-model-arguments)
+-

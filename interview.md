@@ -1,0 +1,13 @@
+- 数组那些方法会更改数组自身
+  - push pop shift unshift splice reverse sort
+- vue 响应式数据原理
+  - 递归遍历data 属性
+  - Object.defineProperty
+  - get 收集依赖 watcher
+  - set 触发更新 通知 watcher 进行更新操作
+- vue 如何检测数组变化的
+  - 更改原型链
+  - 改写7个方法，通知视图更新
+  - 对数组里的每个元素进行observe
+- vue 异步渲染
+- computed watch method 区别
