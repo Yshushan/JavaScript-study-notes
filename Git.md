@@ -191,3 +191,22 @@ git pull
 - **`git config --global credential.helper 'store --file ~/.my-credentials'`**: "store" 模式可以接受一个 `--file <path>` 参数，可以自定义存放密码的文件路径（默认是 ~/.git-credentials ）
 - **`git config --global credential.helper cache`**: 将凭证存放在内存中一段时间。 密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。
 - **`git config --global credential.helper 'cache --time 3600'`**:  "cache" 模式有 `--timeout <seconds>` 参数，可以设置后台进程的存活时间（默认是 900，也就是 15 分钟）
+
+## git merge 时忽略指定的文件
+在项目根目录创建`.gitattributes` 文件，并添加如下配置
+```sh
+myfile merge=ours
+```
+
+> 如果你不想提交 `.gitattributes` 文件，可以添加到 `.git/info/attributes` 中
+
+然后定义一个 `ours`  合并策略：
+
+```sh
+git config --global merge.ours.driver true
+```
+
+这样当进行 git merge 操作时，git 会忽略 `myfile` 文件出现的冲突，并使用你当前所在的分支的版本
+
+> 注意，这种方法只适用于 A，B 两个分支都修改并 commit 了 `myfile` 文件，并且始终是从一个分支 A merge 到另一个分支 B，而不能把 B 分支又 merge 回 A 分支，否则 `myfile` 会进行合并，并采用 B 分支的版本 
+

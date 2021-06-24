@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-.idea/
-.vscode/
-node_modules/
-progress-flow/
-printPage/
-*.[jt]s
-*.[jt]sx
-*.html
-*.css
-*.css.*
-*.styl
-*.s[ca]ss
-*.json
-js*.md
-*.txt
-*.svg
-*.jpg
-*.png
-test/
-=======
 *
 !*.md
->>>>>>> 870195f0c4f536bc32e2c5c507642575b7852e7b
+node_modules
